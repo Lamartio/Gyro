@@ -36,7 +36,7 @@ class Gyro<T>(
 
     companion object {
 
-        operator fun <T> invoke(value: T) = AtomicReference(value).run { Gyro(::get, ::set) }
+        operator fun <T> invoke(value: T) = AtomicReference(value).toGyro()
 
     }
 

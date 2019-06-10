@@ -1,4 +1,4 @@
-package io.lamart.gyro.rxjava
+package io.lamart.gyro.rxjava2
 
 import io.lamart.gyro.Gyro
 import io.reactivex.subjects.BehaviorSubject
