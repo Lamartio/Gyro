@@ -1,1 +1,1 @@
-include ':library', ':sample', ':library-rxjava2'
+include ':library', ':sample', ':library-rxjava2', ':library-livedata'
