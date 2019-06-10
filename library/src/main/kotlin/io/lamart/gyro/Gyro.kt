@@ -3,23 +3,27 @@ package io.lamart.gyro
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 
-class Gyro<T>(
-    private val get: () -> T,
-    private val set: (T) -> Unit
-) {
+fun <T> gyroOf(get: () -> T, set: (T) -> Unit): Gyro<T> =
+    object : Gyro<T> {
+
+        override var value: T
+            get() = get()
+            set(value) = set(value)
+
+    }
+
+fun <T> AtomicReference<T>.toGyro() = gyroOf(::get, ::set)
+
+interface Gyro<T> {
 
     var value: T
-        get() = get()
-        set(value) = set(value)
 
-    fun <R> map(get: T.() -> R, set: T.(R) -> Unit) = Gyro({ value.run(get) }, { set(value, it) })
+    fun <R> map(get: T.() -> R, set: T.(R) -> Unit) = gyroOf({ value.run(get) }, { set(value, it) })
 
-    fun filter(predicate: (T) -> Boolean) = Gyro(::value) { it.takeIf(predicate)?.let { value = it } }
+    fun filter(predicate: (T) -> Boolean) = gyroOf(::value) { it.takeIf(predicate)?.let { value = it } }
 
     @Suppress("UNCHECKED_CAST")
-    fun <R> cast() = Gyro({ value as R }, { value = it as T })
-
-    inline fun <reified R> castIf() = filter { it is R }.cast<R>()
+    fun <R> cast() = gyroOf({ value as R }, { value = it as T })
 
     fun update(block: (T) -> T) = value.let(block).let { value = it }
 
@@ -34,12 +38,6 @@ class Gyro<T>(
 
     fun toProperty(): ReadWriteProperty<Any?, T> = StateProperty(this)
 
-    companion object {
-
-        operator fun <T> invoke(value: T) = AtomicReference(value).toGyro()
-
-    }
-
 }
 
-data class Record<T>(val before: T, val after: T)
+inline fun <reified R> Gyro<*>.castIf() = filter { it is R }.cast<R>()

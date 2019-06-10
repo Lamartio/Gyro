@@ -1,10 +1,11 @@
 package io.lamart.gyro
 
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 
-fun <T> T.toImmutable() = Immutable(this)
+fun <T> T.toImmutable(): Immutable<T, T> = AtomicReference(this).toGyro().let { Immutable(it, it) }
 
-class Immutable<T, R> private constructor(
+class Immutable<T, R> internal constructor(
     private val origin: Gyro<T>,
     private val current: Gyro<R>
 ) {
@@ -32,10 +33,5 @@ class Immutable<T, R> private constructor(
 
     private fun <N> wrap(transform: Gyro<R>.() -> Gyro<N>) = Immutable(origin, transform(current))
 
-    companion object {
-
-        operator fun <T> invoke(value: T): Immutable<T, T> = Gyro(value).let { Immutable(it, it) }
-
-    }
 
 }
