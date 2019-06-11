@@ -1,6 +1,5 @@
 package io.lamart.glyph
 
-import arrow.core.Option
 import io.lamart.gyro.Foldable
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -27,12 +26,12 @@ class FoldableTests {
     @Test
     fun maybe() {
         Foldable
-            .maybe { Option.just(true) }
+            .maybe { true }
             .fold({ false }, { it })
             .let { assertTrue(it) }
 
         Foldable
-            .maybe { Option.empty<Boolean>() }
+            .maybe<Boolean> { null }
             .fold({ false }, { it })
             .let { assertFalse(it) }
     }

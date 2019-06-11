@@ -1,8 +1,5 @@
 package io.lamart.gyro
 
-import arrow.core.Option
-import arrow.core.getOrElse
-
 interface ConditionalGyro<T> : OptionalVariable<T>, Foldable<T> {
 
     fun <R> map(get: T.() -> R, copy: T.(R) -> T): ConditionalGyro<R>
@@ -16,33 +13,32 @@ interface ConditionalGyro<T> : OptionalVariable<T>, Foldable<T> {
 }
 
 fun <T> gyroOfNullable(get: () -> T?, set: (T) -> Unit) =
-    conditionalGyroOf({ Option.fromNullable(get()) }, set)
+    conditionalGyroOf({ Foldable.maybe(get) }, set)
 
-fun <T> conditionalGyroOf(get: () -> Option<T>, set: (T) -> Unit): ConditionalGyro<T> =
+fun <T> conditionalGyroOf(get: () -> Foldable<T>, set: (T) -> Unit): ConditionalGyro<T> =
     object : ConditionalGyro<T>,
-        OptionalVariable<T> by OptionalVariable.invoke(get, set),
-        Foldable<T> by Foldable.maybe(get) {
+        OptionalVariable<T> by OptionalVariable(get, set),
+        Foldable<T> by Foldable.wrap(get) {
 
-        private val option: Option<T>
-            get() = get()
+        private val foldable: Foldable<T> = this
 
         override fun <R> map(get: T.() -> R, copy: T.(R) -> T): ConditionalGyro<R> =
             conditionalGyroOf(
-                { get().map(get) },
+                { foldable.map(get) },
                 { value -> get().map { copy(it, value) }.map(set) }
             )
 
         override fun filter(predicate: (T) -> Boolean): ConditionalGyro<T> =
-            conditionalGyroOf({ option.filter(predicate) }, set)
+            conditionalGyroOf({ foldable.filter(predicate) }, set)
 
         @Suppress("UNCHECKED_CAST")
         override fun <R> filter(type: Class<R>): ConditionalGyro<R> =
             conditionalGyroOf(
-                { option.filter(type::isInstance).map { it as R } },
+                { foldable.filter(type::isInstance).map { it as R } },
                 { set(it as T) }
             )
 
-        override fun cast(): Gyro<T> = gyroOf({ option.getOrElse { throw ClassCastException() } }, set)
+        override fun cast(): Gyro<T> = gyroOf({ foldable.getOrElse { throw ClassCastException() } }, set)
 
     }
 

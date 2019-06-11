@@ -1,6 +1,6 @@
 package io.lamart.glyph
 
-import arrow.core.Option
+import io.lamart.gyro.Foldable
 import io.lamart.gyro.OptionalVariable
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
@@ -11,13 +11,7 @@ import kotlin.test.assertTrue
 class OptionalVariableTests {
 
     private fun <T> optionalVariableOf(value: T) =
-        AtomicReference(value).run {
-            OptionalVariable({
-                Option.just(
-                    get()
-                )
-            }, ::set)
-        }
+        AtomicReference(value).run { OptionalVariable({ Foldable.some<T>(::get) }, ::set) }
 
     @Test
     fun update() {
