@@ -1,43 +1,45 @@
 package io.lamart.gyro
 
+import arrow.core.Option
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.properties.ReadWriteProperty
 
-fun <T> gyroOf(get: () -> T, set: (T) -> Unit): Gyro<T> =
-    object : Gyro<T> {
+interface Gyro<T> : Variable<T>, Foldable<T> {
 
-        override var value: T
-            get() = get()
-            set(value) = set(value)
+    fun <R> map(get: T.() -> R, copy: T.(R) -> T): Gyro<R>
 
-    }
+    fun filter(predicate: (T) -> Boolean): ConditionalGyro<T>
 
-fun <T> AtomicReference<T>.toGyro() = gyroOf(::get, ::set)
+    fun <R> filter(type: Class<R>): ConditionalGyro<R>
 
-interface Gyro<T> {
-
-    var value: T
-
-    fun <R> map(get: T.() -> R, set: T.(R) -> Unit) = gyroOf({ value.run(get) }, { set(value, it) })
-
-    fun filter(predicate: (T) -> Boolean) = gyroOf(::value) { it.takeIf(predicate)?.let { value = it } }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <R> cast() = gyroOf({ value as R }, { value = it as T })
-
-    fun update(block: (T) -> T) = value.let(block).let { value = it }
-
-    fun record(block: (T) -> T): Record<T> {
-        val before: T = value
-        val after: T = block(before)
-        val record = Record(before, after)
-
-        value = after
-        return record
-    }
-
-    fun toProperty(): ReadWriteProperty<Any?, T> = StateProperty(this)
+    fun cast(): ConditionalGyro<T>
 
 }
 
-inline fun <reified R> Gyro<*>.castIf() = filter { it is R }.cast<R>()
+inline fun <reified R> Gyro<*>.filter() = filter(R::class.java)
+
+fun <T> AtomicReference<T>.toGyro() = gyroOf(::get, ::set)
+
+fun <T> gyroOf(get: () -> T, set: (T) -> Unit): Gyro<T> =
+    object : Gyro<T>,
+        Variable<T> by Variable.invoke(get, set),
+        Foldable<T> by Foldable.some(get) {
+
+        override fun <R> map(get: T.() -> R, copy: T.(R) -> T): Gyro<R> =
+            gyroOf(
+                { get().let(get) },
+                { copy(get(), it).let(::set) }
+            )
+
+        override fun filter(predicate: (T) -> Boolean): ConditionalGyro<T> =
+            conditionalGyroOf({ Option.just(get()).filter(predicate) }, set)
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <R> filter(type: Class<R>): ConditionalGyro<R> =
+            conditionalGyroOf(
+                { Option.just(get()).filter(type::isInstance).map { it as R } },
+                { set(it as T) }
+            )
+
+        override fun cast(): ConditionalGyro<T> = conditionalGyroOf({ Option.just(get()) }, set)
+
+    }
