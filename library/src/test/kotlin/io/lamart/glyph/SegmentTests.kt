@@ -1,32 +1,28 @@
 package io.lamart.glyph
 
 import io.lamart.gyro.filter
-import io.lamart.gyro.toGyro
+import io.lamart.gyro.toSegment
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.*
 
+class SegmentTests {
 
-class ConditionalGyroTests {
-
-    private fun <T> conditionalGyroOf(value: T) = AtomicReference(value).toGyro().cast()
+    private fun <T> gyroOf(value: T) = AtomicReference(value).toSegment()
 
     @Test
     fun map() {
-        conditionalGyroOf(Bell())
+        val (before, after) = gyroOf(Bell())
             .map({ isRinging }, { copy(isRinging = it) })
             .record { !it }
-            .let {
-                assertNotNull(it)
-                assertFalse(it.before)
-                assertTrue(it.after)
-            }
 
+        assertFalse(before)
+        assertTrue(after)
     }
 
     @Test
     fun typeFilter() {
-        conditionalGyroOf(Door.Open as Door)
+        gyroOf(Door.Open as Door)
             .filter<Door.Open>()
             .get()
             .let {
@@ -34,7 +30,7 @@ class ConditionalGyroTests {
                 assertSame(it, Door.Open)
             }
 
-        conditionalGyroOf(Door.Open as Door)
+        gyroOf(Door.Open as Door)
             .filter<Door.Closed>()
             .get()
             .let { assertNull(it) }
@@ -42,7 +38,7 @@ class ConditionalGyroTests {
 
     @Test
     fun predicateFilter() {
-        conditionalGyroOf(Bell())
+        gyroOf(Bell())
             .filter { !it.isRinging }
             .get()
             .let {
@@ -50,10 +46,11 @@ class ConditionalGyroTests {
                 assertSame(it.isRinging, false)
             }
 
-        conditionalGyroOf(Bell())
+        gyroOf(Bell())
             .filter { it.isRinging }
             .get()
             .let { assertNull(it) }
     }
 
 }
+

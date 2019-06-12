@@ -31,6 +31,8 @@ interface Variable<T> : Value<T> {
 
 }
 
+fun <T> Variable<T>.toSegment(): Segment<T> = segmentOf(::get, ::set)
+
 fun <T> Variable<T>.toProperty(): ReadWriteProperty<Any?, T> =
     object : ReadWriteProperty<Any?, T> {
 

@@ -35,3 +35,5 @@ interface OptionalVariable<T> : OptionalValue<T> {
     }
 
 }
+
+fun <T> OptionalVariable<T>.toSegment() = segmentOfNullable(::get, ::set)

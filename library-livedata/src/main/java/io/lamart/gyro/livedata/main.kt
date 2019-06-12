@@ -1,8 +1,6 @@
 package io.lamart.gyro.livedata
 
 import androidx.lifecycle.MutableLiveData
-import io.lamart.gyro.Gyro
-import io.lamart.gyro.gyroOf
-import io.lamart.gyro.gyroOfNullable
+import io.lamart.gyro.segmentOfNullable
 
-fun <T> MutableLiveData<T>.toGyro() = gyroOfNullable({ value }, { value = it })
+fun <T> MutableLiveData<T>.toGyro() = segmentOfNullable({ value }, { value = it })
