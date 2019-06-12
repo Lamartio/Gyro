@@ -1,6 +1,6 @@
-package io.lamart.gyro
+package io.lamart.gyro.observable
 
-typealias Observer<T> = (next: T) -> Unit
+import io.lamart.gyro.variables.Variable
 
 interface Observable<T> : Variable<T> {
 
@@ -15,12 +15,6 @@ interface Observable<T> : Variable<T> {
         ): Observable<T> = ObservableInstance(value, lock, afterSubscribe)
 
     }
-
-}
-
-interface Subscription {
-
-    fun unsubscribe()
 
 }
 
@@ -57,7 +51,8 @@ private class ObservableInstance<T>(
             .map { it.observer }
             .reduce { l, r -> { l(it); r(it) } }
 
-    private inner class SubscriptionInstance(val observer: Observer<T>) : Subscription {
+    private inner class SubscriptionInstance(val observer: Observer<T>) :
+        Subscription {
 
         override fun unsubscribe() {
             synchronized(lock) {

@@ -1,9 +1,8 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.Observable
-import io.lamart.gyro.Observer
-import io.lamart.gyro.TestObserver
-import io.lamart.gyro.toSegment
+import io.lamart.gyro.observable.Observable
+import io.lamart.gyro.observable.TestObserver
+import io.lamart.gyro.variables.toSegment
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

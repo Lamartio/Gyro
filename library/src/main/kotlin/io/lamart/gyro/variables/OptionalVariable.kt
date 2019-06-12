@@ -1,4 +1,10 @@
-package io.lamart.gyro
+package io.lamart.gyro.variables
+
+import io.lamart.gyro.Foldable
+import io.lamart.gyro.Record
+import io.lamart.gyro.getOrNull
+import io.lamart.gyro.segment.segmentOfNullable
+import java.util.concurrent.atomic.AtomicReference
 
 interface OptionalVariable<T> : OptionalValue<T> {
 
@@ -35,5 +41,9 @@ interface OptionalVariable<T> : OptionalValue<T> {
     }
 
 }
+
+fun <T> variableOfNullable(value: T?) = AtomicReference(value).toOptionalVariable()
+
+fun <T> AtomicReference<T?>.toOptionalVariable() = OptionalVariable({ Foldable.maybe(::get) }, ::set)
 
 fun <T> OptionalVariable<T>.toSegment() = segmentOfNullable(::get, ::set)

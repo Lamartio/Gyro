@@ -1,6 +1,6 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.Variable
+import io.lamart.gyro.variables.Variable
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.assertFalse

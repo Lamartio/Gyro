@@ -1,7 +1,7 @@
 package io.lamart.glyph
 
 import io.lamart.gyro.Foldable
-import io.lamart.gyro.OptionalVariable
+import io.lamart.gyro.variables.OptionalVariable
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.assertFalse

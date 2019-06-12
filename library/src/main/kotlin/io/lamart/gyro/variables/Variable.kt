@@ -1,5 +1,9 @@
-package io.lamart.gyro
+package io.lamart.gyro.variables
 
+import io.lamart.gyro.Record
+import io.lamart.gyro.segment.Segment
+import io.lamart.gyro.segment.segmentOf
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -31,7 +35,11 @@ interface Variable<T> : Value<T> {
 
 }
 
-fun <T> Variable<T>.toSegment(): Segment<T> = segmentOf(::get, ::set)
+fun <T> variableOf(value: T) = AtomicReference(value).toVariable()
+
+fun <T> AtomicReference<T>.toVariable() = Variable(::get, ::set)
+
+fun <T> Variable<T>.toSegment() = segmentOf(::get, ::set)
 
 fun <T> Variable<T>.toProperty(): ReadWriteProperty<Any?, T> =
     object : ReadWriteProperty<Any?, T> {

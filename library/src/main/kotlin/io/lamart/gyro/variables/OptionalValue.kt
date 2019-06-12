@@ -1,4 +1,4 @@
-package io.lamart.gyro
+package io.lamart.gyro.variables
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
