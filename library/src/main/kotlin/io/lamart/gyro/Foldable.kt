@@ -6,29 +6,13 @@ interface Foldable<T> {
 
     companion object {
 
-        fun <T> some(get: () -> T) = object : Foldable<T> {
+        fun <T> some(get: () -> T): Foldable<T> = SomeFoldable(get)
 
-            override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = ifSome(get())
+        fun <T> none(): Foldable<T> = NoneFoldable()
 
-        }
+        fun <T> maybe(get: () -> T?): Foldable<T> = MaybeFoldable(get)
 
-        fun <T> none() = object : Foldable<T> {
-
-            override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = ifNone()
-
-        }
-
-        fun <T> maybe(get: () -> T?) = object : Foldable<T> {
-
-            override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = get()?.let(ifSome) ?: ifNone()
-
-        }
-
-        fun <T> wrap(get: () -> Foldable<T>) = object : Foldable<T> {
-
-            override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = get().fold(ifNone, ifSome)
-
-        }
+        fun <T> wrap(get: () -> Foldable<T>): Foldable<T> = WrapFoldable(get)
 
     }
 
@@ -47,3 +31,26 @@ fun <T> Foldable<T>.getOrElse(default: () -> T): T = fold(default, { it })
 
 fun <T> Foldable<T>.getOrNull(): T? = fold({ null }, { it })
 
+private class SomeFoldable<T>(private val get: () -> T) : Foldable<T> {
+
+    override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = ifSome(get())
+
+}
+
+private class NoneFoldable<T> : Foldable<T> {
+
+    override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = ifNone()
+
+}
+
+private class MaybeFoldable<T>(private val get: () -> T?) : Foldable<T> {
+
+    override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = get()?.let(ifSome) ?: ifNone()
+
+}
+
+private class WrapFoldable<T>(private val get: () -> Foldable<T>) : Foldable<T> {
+
+    override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = get().fold(ifNone, ifSome)
+
+}

@@ -27,14 +27,23 @@ interface OptionalVariable<T> : OptionalValue<T> {
                 override fun set(value: T) = set.invoke(value)
 
                 override fun update(block: (T) -> T) {
-                    foldable.getOrNull()?.let(block)?.let(set)
+                    foldable.getOrNull()?.let { before ->
+                        val after = block(before)
+
+                        if (before != after)
+                            set(after)
+                    }
                 }
 
                 override fun record(block: (T) -> T): Record<T>? =
-                    foldable.fold(
-                        { null },
-                        { before -> block(before).also(set).let { Record(before, it) } }
-                    )
+                    foldable.fold({ null }) { before ->
+                        val after = block(before)
+
+                        if (before != after)
+                            set(after)
+
+                        Record(before, after)
+                    }
 
             }
 

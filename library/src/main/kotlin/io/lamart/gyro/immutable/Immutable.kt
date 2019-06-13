@@ -2,6 +2,7 @@ package io.lamart.gyro.immutable
 
 import io.lamart.gyro.segment.OptionalSegment
 import io.lamart.gyro.segment.Segment
+import io.lamart.gyro.variables.Value
 import io.lamart.gyro.variables.toSegment
 import io.lamart.gyro.variables.variableOf
 
@@ -10,7 +11,7 @@ fun <T> immutableOf(value: T): Immutable<T, T> =
         .toSegment()
         .let { Immutable(it) }
 
-interface Immutable<T, N> : Copyable<T, N> {
+interface Immutable<T, N> : Copyable<T, N>, Value<T> {
 
     fun <R> map(get: N.() -> R, set: N.(R) -> N): Immutable<T, R>
 
@@ -21,7 +22,7 @@ interface Immutable<T, N> : Copyable<T, N> {
     companion object {
 
         internal operator fun <T> invoke(segment: Segment<T>): Immutable<T, T> =
-            ImmutableInstance(segment, segment.cast())
+            ImmutableInstance(segment::get, segment.cast())
 
     }
 
@@ -30,22 +31,24 @@ interface Immutable<T, N> : Copyable<T, N> {
 inline fun <T, reified R> Immutable<T, *>.filter() = filter(R::class.java)
 
 private class ImmutableInstance<T, N>(
-    private val origin: Segment<T>,
+    private val get: () -> T,
     private val next: OptionalSegment<N>
 ) : Immutable<T, N> {
 
-    override fun <R> map(get: N.() -> R, set: N.(R) -> N) = wrap { next.map(get, set) }
+    override fun get(): T = get.invoke()
 
-    override fun filter(predicate: (N) -> Boolean) = wrap { next.filter(predicate) }
+    override fun <R> map(get: N.() -> R, copy: N.(R) -> N) = wrap { map(get, copy) }
 
-    override fun <R> filter(type: Class<R>) = wrap { next.filter(type) }
+    override fun filter(predicate: (N) -> Boolean) = wrap { filter(predicate) }
+
+    override fun <R> filter(type: Class<R>) = wrap { filter(type) }
 
     fun <R> wrap(block: OptionalSegment<N>.() -> OptionalSegment<R>) =
-        ImmutableInstance(origin, block(next))
+        ImmutableInstance(get, block(next))
 
     override fun copy(block: (N) -> N): T {
         next.update(block)
-        return origin.get()
+        return get()
     }
 
 }

@@ -39,17 +39,19 @@ private class ObservableInstance<T>(
         SubscriptionInstance(observer).also {
             val value = synchronized(lock) {
                 subscriptions.add(it)
-                publisher = subscriptions.toPublisher()
+                invalidatePublisher()
                 value
             }
 
             afterSubscribe(value, observer)
         }
 
-    private fun Iterable<SubscriptionInstance>.toPublisher() =
-        asSequence()
+    private fun invalidatePublisher() {
+        publisher = subscriptions
+            .asSequence()
             .map { it.observer }
             .reduce { l, r -> { l(it); r(it) } }
+    }
 
     private inner class SubscriptionInstance(val observer: Observer<T>) :
         Subscription {
@@ -57,19 +59,10 @@ private class ObservableInstance<T>(
         override fun unsubscribe() {
             synchronized(lock) {
                 subscriptions.remove(this)
-                publisher = subscriptions.toPublisher()
+                invalidatePublisher()
             }
         }
 
-    }
-
-}
-
-
-class TestObserver<T>(private val history: MutableList<T> = mutableListOf()) : Observer<T>, List<T> by history {
-
-    override operator fun invoke(next: T) {
-        history.add(next)
     }
 
 }

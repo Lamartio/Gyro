@@ -7,13 +7,13 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.*
 
 
-class ConditionalSegmentTests {
+class OptionalSegmentTests {
 
-    private fun <T> conditionalGyroOf(value: T) = AtomicReference(value).toSegment().cast()
+    private fun <T> optionalSegmentOf(value: T) = AtomicReference(value).toSegment().cast()
 
     @Test
     fun map() {
-        conditionalGyroOf(Bell())
+        optionalSegmentOf(Bell(false))
             .map({ isRinging }, { copy(isRinging = it) })
             .record { !it }
             .let {
@@ -26,7 +26,7 @@ class ConditionalSegmentTests {
 
     @Test
     fun typeFilter() {
-        conditionalGyroOf(Door.Open as Door)
+        optionalSegmentOf(Door.Open as Door)
             .filter<Door.Open>()
             .get()
             .let {
@@ -34,7 +34,7 @@ class ConditionalSegmentTests {
                 assertSame(it, Door.Open)
             }
 
-        conditionalGyroOf(Door.Open as Door)
+        optionalSegmentOf(Door.Open as Door)
             .filter<Door.Closed>()
             .get()
             .let { assertNull(it) }
@@ -42,7 +42,7 @@ class ConditionalSegmentTests {
 
     @Test
     fun predicateFilter() {
-        conditionalGyroOf(Bell())
+        optionalSegmentOf(Bell(false))
             .filter { !it.isRinging }
             .get()
             .let {
@@ -50,7 +50,7 @@ class ConditionalSegmentTests {
                 assertSame(it.isRinging, false)
             }
 
-        conditionalGyroOf(Bell())
+        optionalSegmentOf(Bell(false))
             .filter { it.isRinging }
             .get()
             .let { assertNull(it) }

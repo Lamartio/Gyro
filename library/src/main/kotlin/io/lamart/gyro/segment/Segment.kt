@@ -37,16 +37,16 @@ fun <T> segmentOf(get: () -> T, set: (T) -> Unit): Segment<T> =
             )
 
         override fun filter(predicate: (T) -> Boolean): OptionalSegment<T> =
-            conditionalSegmentOf({ Foldable.some(get).filter(predicate) }, set)
+            optionalSegmentOf({ Foldable.some(get).filter(predicate) }, set)
 
         @Suppress("UNCHECKED_CAST")
         override fun <R> filter(type: Class<R>): OptionalSegment<R> =
-            conditionalSegmentOf(
+            optionalSegmentOf(
                 { Foldable.some(get).filter(type::isInstance).map { it as R } },
                 { set(it as T) }
             )
 
         override fun cast(): OptionalSegment<T> =
-            conditionalSegmentOf({ Foldable.some(get) }, set)
+            optionalSegmentOf({ Foldable.some(get) }, set)
 
     }

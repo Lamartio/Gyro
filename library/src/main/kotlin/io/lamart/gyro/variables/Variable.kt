@@ -11,27 +11,39 @@ interface Variable<T> : Value<T> {
 
     fun set(value: T)
 
-    fun update(block: (T) -> T) = get().let(block).let(::set)
+    fun update(block: (T) -> T) {
+        get().let { before ->
+            val after = block(before)
+
+            if (before != after)
+                set(after)
+        }
+    }
 
     fun record(block: (T) -> T): Record<T> =
         get().let { before ->
-            block(before)
-                .also(::set)
-                .let { Record(before, it) }
+            val after = block(before)
+
+            if (before != after)
+                set(after)
+
+            Record(before, after)
         }
 
     companion object {
 
-        internal operator fun <T> invoke(get: () -> T, set: (T) -> Unit) =
-            object : Variable<T> {
-
-                override fun get(): T = get.invoke()
-
-                override fun set(value: T) = set.invoke(value)
-
-            }
+        internal operator fun <T> invoke(get: () -> T, set: (T) -> Unit) :Variable<T> =
+            VariableInstance(get, set)
 
     }
+
+}
+
+private class VariableInstance<T>(private val get: () -> T, private val set: (T) -> Unit) : Variable<T> {
+
+    override fun get(): T = get.invoke()
+
+    override fun set(value: T) = set.invoke(value)
 
 }
 

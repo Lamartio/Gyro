@@ -16,9 +16,9 @@ interface OptionalSegment<T> : OptionalVariable<T>, Foldable<T> {
 }
 
 fun <T> segmentOfNullable(get: () -> T?, set: (T) -> Unit) =
-    conditionalSegmentOf({ Foldable.maybe(get) }, set)
+    optionalSegmentOf({ Foldable.maybe(get) }, set)
 
-fun <T> conditionalSegmentOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalSegment<T> =
+fun <T> optionalSegmentOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalSegment<T> =
     object : OptionalSegment<T>,
         OptionalVariable<T> by OptionalVariable(get, set),
         Foldable<T> by Foldable.wrap(get) {
@@ -26,17 +26,17 @@ fun <T> conditionalSegmentOf(get: () -> Foldable<T>, set: (T) -> Unit): Optional
         private val foldable: Foldable<T> = this
 
         override fun <R> map(get: T.() -> R, copy: T.(R) -> T): OptionalSegment<R> =
-            conditionalSegmentOf(
+            optionalSegmentOf(
                 { foldable.map(get) },
-                { value -> get().map { copy(it, value) }.map(set) }
+                { value -> get().map { copy(it, value) }.fold({}, set) }
             )
 
         override fun filter(predicate: (T) -> Boolean): OptionalSegment<T> =
-            conditionalSegmentOf({ foldable.filter(predicate) }, set)
+            optionalSegmentOf({ foldable.filter(predicate) }, set)
 
         @Suppress("UNCHECKED_CAST")
         override fun <R> filter(type: Class<R>): OptionalSegment<R> =
-            conditionalSegmentOf(
+            optionalSegmentOf(
                 { foldable.filter(type::isInstance).map { it as R } },
                 { set(it as T) }
             )

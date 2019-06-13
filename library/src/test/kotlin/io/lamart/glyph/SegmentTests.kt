@@ -8,11 +8,11 @@ import kotlin.test.*
 
 class SegmentTests {
 
-    private fun <T> gyroOf(value: T) = AtomicReference(value).toSegment()
+    private fun <T> segmentOf(value: T) = AtomicReference(value).toSegment()
 
     @Test
     fun map() {
-        val (before, after) = gyroOf(Bell())
+        val (before, after) = segmentOf(Bell(false))
             .map({ isRinging }, { copy(isRinging = it) })
             .record { !it }
 
@@ -22,7 +22,7 @@ class SegmentTests {
 
     @Test
     fun typeFilter() {
-        gyroOf(Door.Open as Door)
+        segmentOf(Door.Open as Door)
             .filter<Door.Open>()
             .get()
             .let {
@@ -30,7 +30,7 @@ class SegmentTests {
                 assertSame(it, Door.Open)
             }
 
-        gyroOf(Door.Open as Door)
+        segmentOf(Door.Open as Door)
             .filter<Door.Closed>()
             .get()
             .let { assertNull(it) }
@@ -38,7 +38,7 @@ class SegmentTests {
 
     @Test
     fun predicateFilter() {
-        gyroOf(Bell())
+        segmentOf(Bell(false))
             .filter { !it.isRinging }
             .get()
             .let {
@@ -46,7 +46,7 @@ class SegmentTests {
                 assertSame(it.isRinging, false)
             }
 
-        gyroOf(Bell())
+        segmentOf(Bell(false))
             .filter { it.isRinging }
             .get()
             .let { assertNull(it) }

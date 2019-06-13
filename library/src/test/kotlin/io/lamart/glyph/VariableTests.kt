@@ -1,6 +1,7 @@
 package io.lamart.glyph
 
 import io.lamart.gyro.variables.Variable
+import io.lamart.gyro.variables.toVariable
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.assertFalse
@@ -8,19 +9,14 @@ import kotlin.test.assertTrue
 
 class VariableTests {
 
-    private fun <T> variable(value: T) = AtomicReference(value).run {
-        Variable(
-            ::get,
-            ::set
-        )
-    }
+    private fun <T> variable(value: T) = AtomicReference(value).toVariable()
 
     @Test
     fun update() {
-        val gyro = variable(false)
+        val variable = variable(false)
 
-        gyro.update { !it }
-        assertTrue(gyro.get())
+        variable.update { !it }
+        assertTrue(variable.get())
     }
 
     @Test
