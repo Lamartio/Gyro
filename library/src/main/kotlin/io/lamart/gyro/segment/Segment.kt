@@ -1,10 +1,10 @@
 package io.lamart.gyro.segment
 
 import io.lamart.gyro.Foldable
-import io.lamart.gyro.variables.Variable
 import io.lamart.gyro.filter
 import io.lamart.gyro.immutable.Immutable
 import io.lamart.gyro.map
+import io.lamart.gyro.variables.Variable
 import java.util.concurrent.atomic.AtomicReference
 
 interface Segment<T> : Variable<T>, Foldable<T> {

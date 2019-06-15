@@ -1,6 +1,9 @@
 package io.lamart.gyro.segment
 
-import io.lamart.gyro.*
+import io.lamart.gyro.Foldable
+import io.lamart.gyro.filter
+import io.lamart.gyro.getOrElse
+import io.lamart.gyro.map
 import io.lamart.gyro.variables.OptionalVariable
 
 interface OptionalSegment<T> : OptionalVariable<T>, Foldable<T> {

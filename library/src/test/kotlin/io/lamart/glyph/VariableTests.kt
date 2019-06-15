@@ -1,6 +1,5 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.variables.Variable
 import io.lamart.gyro.variables.toVariable
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference

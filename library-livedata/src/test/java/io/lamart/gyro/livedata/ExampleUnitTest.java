@@ -2,7 +2,7 @@ package io.lamart.gyro.livedata;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit mapping properties, which will execute on the development machine (host).

@@ -1,9 +1,7 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.immutable.filter
 import io.lamart.gyro.immutable.immutableOf
 import org.junit.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
