@@ -6,7 +6,7 @@ import io.lamart.gyro.observable.Observable
 import io.lamart.gyro.observable.Subscription
 import io.lamart.gyro.segment.segmentOfNullable
 
-fun <T> MutableLiveData<T>.toSegment() = segmentOfNullable({ value }, { value = it })
+fun <T> MutableLiveData<T>.toSegment() = segmentOfNullable({ value }, ::setValue)
 
 fun <T> Observable<T>.toLiveData(): LiveData<T> =
     object : LiveData<T>() {
@@ -15,7 +15,7 @@ fun <T> Observable<T>.toLiveData(): LiveData<T> =
 
         override fun onActive() {
             super.onActive()
-            this@toLiveData.subscribe { value = it }
+            this@toLiveData.subscribe(::setValue)
         }
 
         override fun onInactive() {

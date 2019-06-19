@@ -13,7 +13,7 @@ fun <T> immutableOf(value: T): Immutable<T, T> =
 
 interface Immutable<T, N> : Copyable<T, N>, Value<T> {
 
-    fun <R> map(get: N.() -> R, set: N.(R) -> N): Immutable<T, R>
+    fun <R> select(transform: N.() -> R, copy: N.(R) -> N): Immutable<T, R>
 
     fun filter(predicate: (N) -> Boolean): Immutable<T, N>
 
@@ -37,7 +37,7 @@ private class ImmutableInstance<T, N>(
 
     override fun get(): T = get.invoke()
 
-    override fun <R> map(get: N.() -> R, copy: N.(R) -> N) = wrap { map(get, copy) }
+    override fun <R> select(transform: N.() -> R, copy: N.(R) -> N) = wrap { select(transform, copy) }
 
     override fun filter(predicate: (N) -> Boolean) = wrap { filter(predicate) }
 

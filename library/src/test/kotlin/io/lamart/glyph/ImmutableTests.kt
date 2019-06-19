@@ -19,7 +19,7 @@ class ImmutableTests {
     @Test
     fun map() {
         immutableOf(Bell(false))
-            .map({ isRinging }, { copy(isRinging = it) })
+            .select({ isRinging }, { copy(isRinging = it) })
             .copy { !it }
             .isRinging
             .let { assertTrue(it) }

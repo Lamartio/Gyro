@@ -16,7 +16,7 @@ class ObservableTests {
         val observable = Observable(Bell(false)).apply { subscribe(observer) }
         val (before, after) = observable
             .toSegment()
-            .map({ isRinging }, { copy(isRinging = it) })
+            .select({ isRinging }, { copy(isRinging = it) })
             .record { !it }
 
         assertEquals(2, observer.size)

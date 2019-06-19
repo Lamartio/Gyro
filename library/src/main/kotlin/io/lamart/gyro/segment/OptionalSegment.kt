@@ -8,7 +8,7 @@ import io.lamart.gyro.variables.OptionalVariable
 
 interface OptionalSegment<T> : OptionalVariable<T>, Foldable<T> {
 
-    fun <R> map(get: T.() -> R, copy: T.(R) -> T): OptionalSegment<R>
+    fun <R> select(transform: T.() -> R, copy: T.(R) -> T): OptionalSegment<R>
 
     fun filter(predicate: (T) -> Boolean): OptionalSegment<T>
 
@@ -28,9 +28,9 @@ fun <T> optionalSegmentOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalSeg
 
         private val foldable: Foldable<T> = this
 
-        override fun <R> map(get: T.() -> R, copy: T.(R) -> T): OptionalSegment<R> =
+        override fun <R> select(transform: T.() -> R, copy: T.(R) -> T): OptionalSegment<R> =
             optionalSegmentOf(
-                { foldable.map(get) },
+                { foldable.map(transform) },
                 { value -> get().map { copy(it, value) }.fold({}, set) }
             )
 

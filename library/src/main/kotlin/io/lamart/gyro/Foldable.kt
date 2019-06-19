@@ -31,6 +31,14 @@ fun <T> Foldable<T>.getOrElse(default: () -> T): T = fold(default, { it })
 
 fun <T> Foldable<T>.getOrNull(): T? = fold({ null }, { it })
 
+fun <T> Foldable<T>.fold(block: (FoldResult) -> Unit): Unit =
+    fold({ block(FoldResult.None) }, { block(FoldResult.Some(it)) })
+
+sealed class FoldResult {
+    object None : FoldResult()
+    data class Some<T>(val value: T) : FoldResult()
+}
+
 private class SomeFoldable<T>(private val get: () -> T) : Foldable<T> {
 
     override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = ifSome(get())

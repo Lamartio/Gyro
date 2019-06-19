@@ -13,7 +13,7 @@ class SegmentTests {
     @Test
     fun map() {
         val (before, after) = segmentOf(Bell(false))
-            .map({ isRinging }, { copy(isRinging = it) })
+            .select({ isRinging }, { copy(isRinging = it) })
             .record { !it }
 
         assertFalse(before)

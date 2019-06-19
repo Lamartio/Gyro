@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 interface Segment<T> : Variable<T>, Foldable<T> {
 
-    fun <R> map(get: T.() -> R, copy: T.(R) -> T): Segment<R>
+    fun <R> select(transform: T.() -> R, copy: T.(R) -> T): Segment<R>
 
     fun filter(predicate: (T) -> Boolean): OptionalSegment<T>
 
@@ -30,9 +30,9 @@ fun <T> segmentOf(get: () -> T, set: (T) -> Unit): Segment<T> =
         Variable<T> by Variable(get, set),
         Foldable<T> by Foldable.some(get) {
 
-        override fun <R> map(get: T.() -> R, copy: T.(R) -> T): Segment<R> =
+        override fun <R> select(transform: T.() -> R, copy: T.(R) -> T): Segment<R> =
             segmentOf(
-                { get().let(get) },
+                { get().let(transform) },
                 { copy(get(), it).let(::set) }
             )
 

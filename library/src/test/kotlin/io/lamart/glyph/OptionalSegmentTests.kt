@@ -14,7 +14,7 @@ class OptionalSegmentTests {
     @Test
     fun map() {
         optionalSegmentOf(Bell(false))
-            .map({ isRinging }, { copy(isRinging = it) })
+            .select({ isRinging }, { copy(isRinging = it) })
             .record { !it }
             .let {
                 assertNotNull(it)
