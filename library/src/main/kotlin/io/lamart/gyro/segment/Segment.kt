@@ -7,13 +7,10 @@ import io.lamart.gyro.map
 import io.lamart.gyro.variables.Variable
 import java.util.concurrent.atomic.AtomicReference
 
-interface Segment<T> : Variable<T>, Foldable<T> {
+
+interface Segment<T> : SegmentType<T>, Variable<T> {
 
     fun <R> select(transform: T.() -> R, copy: T.(R) -> T): Segment<R>
-
-    fun filter(predicate: (T) -> Boolean): OptionalSegment<T>
-
-    fun <R> filter(type: Class<R>): OptionalSegment<R>
 
     fun cast(): OptionalSegment<T>
 
@@ -26,27 +23,29 @@ fun <T> AtomicReference<T>.toSegment() = segmentOf(::get, ::set)
 fun <T> Segment<T>.toImmutable() = Immutable(this)
 
 fun <T> segmentOf(get: () -> T, set: (T) -> Unit): Segment<T> =
-    object : Segment<T>,
-        Variable<T> by Variable(get, set),
-        Foldable<T> by Foldable.some(get) {
+    SegmentInstance(get, set)
 
-        override fun <R> select(transform: T.() -> R, copy: T.(R) -> T): Segment<R> =
-            segmentOf(
-                { get().let(transform) },
-                { copy(get(), it).let(::set) }
-            )
+private class SegmentInstance<T>(private val get: () -> T, private val set: (T) -> Unit) : Segment<T>,
+    Variable<T> by Variable(get, set),
+    Foldable<T> by Foldable.some(get) {
 
-        override fun filter(predicate: (T) -> Boolean): OptionalSegment<T> =
-            optionalSegmentOf({ Foldable.some(get).filter(predicate) }, set)
+    override fun <R> select(transform: T.() -> R, copy: T.(R) -> T): Segment<R> =
+        segmentOf(
+            { get().let(transform) },
+            { copy(get(), it).let(::set) }
+        )
 
-        @Suppress("UNCHECKED_CAST")
-        override fun <R> filter(type: Class<R>): OptionalSegment<R> =
-            optionalSegmentOf(
-                { Foldable.some(get).filter(type::isInstance).map { it as R } },
-                { set(it as T) }
-            )
+    override fun filter(predicate: (T) -> Boolean): OptionalSegment<T> =
+        optionalSegmentOf({ Foldable.some(get).filter(predicate) }, set)
 
-        override fun cast(): OptionalSegment<T> =
-            optionalSegmentOf({ Foldable.some(get) }, set)
+    @Suppress("UNCHECKED_CAST")
+    override fun <R> filter(type: Class<R>): OptionalSegment<R> =
+        optionalSegmentOf(
+            { Foldable.some(get).filter(type::isInstance).map { it as R } },
+            { set(it as T) }
+        )
 
-    }
+    override fun cast(): OptionalSegment<T> =
+        optionalSegmentOf({ Foldable.some(get) }, set)
+
+}

@@ -6,32 +6,13 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-interface Variable<T> : Value<T> {
+interface Variable<T> : VariableType<T>, Value<T> {
 
-    fun set(value: T)
-
-    fun update(block: (T) -> T) {
-        get().let { before ->
-            val after = block(before)
-
-            if (before != after)
-                set(after)
-        }
-    }
-
-    fun record(block: (T) -> T): Record<T> =
-        get().let { before ->
-            val after = block(before)
-
-            if (before != after)
-                set(after)
-
-            Record(before, after)
-        }
+    fun record(block: (T) -> T): Record<T>
 
     companion object {
 
-        internal operator fun <T> invoke(get: () -> T, set: (T) -> Unit) :Variable<T> =
+        internal operator fun <T> invoke(get: () -> T, set: (T) -> Unit): Variable<T> =
             VariableInstance(get, set)
 
     }
@@ -43,6 +24,25 @@ private class VariableInstance<T>(private val get: () -> T, private val set: (T)
     override fun get(): T = get.invoke()
 
     override fun set(value: T) = set.invoke(value)
+
+    override fun update(block: (T) -> T) {
+        get().let { before ->
+            val after = block(before)
+
+            if (before != after)
+                set(after)
+        }
+    }
+
+    override fun record(block: (T) -> T): Record<T> =
+        get().let { before ->
+            val after = block(before)
+
+            if (before != after)
+                set(after)
+
+            Record(before, after)
+        }
 
 }
 
