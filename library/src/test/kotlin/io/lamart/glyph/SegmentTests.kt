@@ -11,7 +11,7 @@ class SegmentTests {
     private fun <T> segmentOf(value: T) = AtomicReference(value).toSegment()
 
     @Test
-    fun map() {
+    fun select() {
         val (before, after) = segmentOf(Bell(false))
             .select({ isRinging }, { copy(isRinging = it) })
             .record { !it }

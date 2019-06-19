@@ -12,7 +12,7 @@ class OptionalSegmentTests {
     private fun <T> optionalSegmentOf(value: T) = AtomicReference(value).toSegment().cast()
 
     @Test
-    fun map() {
+    fun select() {
         optionalSegmentOf(Bell(false))
             .select({ isRinging }, { copy(isRinging = it) })
             .record { !it }

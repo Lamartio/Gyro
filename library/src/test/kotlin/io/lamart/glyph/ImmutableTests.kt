@@ -17,7 +17,7 @@ class ImmutableTests {
     }
 
     @Test
-    fun map() {
+    fun select() {
         immutableOf(Bell(false))
             .select({ isRinging }, { copy(isRinging = it) })
             .copy { !it }
