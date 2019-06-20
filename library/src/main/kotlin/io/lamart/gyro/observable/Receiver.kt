@@ -1,6 +1,6 @@
 package io.lamart.gyro.observable
 
-typealias Receiver<T> = (next: T) -> Unit
+typealias Receiver<T> = (value: T) -> Unit
 
 class TestReceiver<T>(private val history: MutableList<T> = mutableListOf()) : Receiver<T>, List<T> by history {
 

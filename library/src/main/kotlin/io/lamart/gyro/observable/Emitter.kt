@@ -1,6 +1,7 @@
 package io.lamart.gyro.observable
 
 import io.lamart.gyro.variables.Variable
+import java.util.concurrent.atomic.AtomicBoolean
 
 interface Emitter<T> : Sender<T>, Variable<T> {
 
@@ -44,11 +45,21 @@ private class EmitterInstance<T>(private var value: T, private val lock: Any) : 
             .reduce { l, r -> { l(it); r(it) } }
     }
 
-    private inner class SubscriptionInstance(val receiver: Receiver<T>) : Subscription {
+    private inner class SubscriptionInstance(receiver: Receiver<T>) : Subscription {
+
+        private val subscribed = AtomicBoolean(true)
+        override val isSubscribed: Boolean
+            get() = subscribed.get()
+        val receiver: Receiver<T> = { value ->
+            value
+                .takeIf { subscribed.get() }
+                ?.let(receiver)
+        }
 
         override fun unsubscribe() {
             synchronized(lock) {
                 subscriptions.remove(this)
+                subscribed.set(false)
                 invalidatePublisher()
             }
         }
