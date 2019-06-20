@@ -10,13 +10,6 @@ interface OptionalVariable<T> : VariableType<T>, OptionalValue<T> {
 
     fun record(block: (T) -> T): Record<T>?
 
-    companion object {
-
-        internal operator fun <T> invoke(get: () -> Foldable<T>, set: (T) -> Unit): OptionalVariable<T> =
-            OptionalVariableInstance(get, set)
-
-    }
-
 }
 
 private class OptionalVariableInstance<T>(
@@ -54,6 +47,10 @@ private class OptionalVariableInstance<T>(
 
 fun <T> variableOfNullable(value: T?) = AtomicReference(value).toOptionalVariable()
 
-fun <T> AtomicReference<T?>.toOptionalVariable() = OptionalVariable({ Foldable.maybe(::get) }, ::set)
+fun <T> optionalVariableOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalVariable<T> =
+    OptionalVariableInstance(get, set)
 
-fun <T> OptionalVariable<T>.toSegment() = segmentOfNullable(::get, ::set)
+fun <T> AtomicReference<T?>.toOptionalVariable(): OptionalVariable<T> =
+    OptionalVariableInstance({ Foldable.maybe(::get) }, ::set)
+
+fun <T> OptionalVariable<T>.toOptionalSegment() = segmentOfNullable(::get, ::set)

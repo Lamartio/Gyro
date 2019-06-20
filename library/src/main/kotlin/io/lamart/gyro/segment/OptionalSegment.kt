@@ -5,49 +5,37 @@ import io.lamart.gyro.filter
 import io.lamart.gyro.getOrElse
 import io.lamart.gyro.map
 import io.lamart.gyro.variables.OptionalVariable
+import io.lamart.gyro.variables.optionalVariableOf
 
-interface OptionalSegment<T> : SegmentType<T>, OptionalVariable<T> {
-
-    fun <R> select(transform: T.() -> R, copy: T.(R) -> T): OptionalSegment<R>
-
-    fun cast(): Segment<T>
-
-}
-
-inline fun <reified R> OptionalSegment<*>.filter() = filter(R::class.java)
-
-fun <T> segmentOfNullable(get: () -> T?, set: (T) -> Unit) =
-    optionalSegmentOf({ Foldable.maybe(get) }, set)
-
-fun <T> optionalSegmentOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalSegment<T> =
-    OptionalSegmentInstance(get, set)
-
-private class OptionalSegmentInstance<T>(
+class OptionalSegment<T>(
     private val get: () -> Foldable<T>,
     private val set: (T) -> Unit
-) : OptionalSegment<T>,
-    OptionalVariable<T> by OptionalVariable(get, set),
-    Foldable<T> by Foldable.wrap(get) {
+) : SegmentType<T>, OptionalVariable<T> by optionalVariableOf(get, set) {
 
-    private val foldable: Foldable<T> = this
+    private val foldable: Foldable<T>
+        get() = get.invoke()
 
-    override fun <R> select(transform: T.() -> R, copy: T.(R) -> T): OptionalSegment<R> =
-        optionalSegmentOf(
+    fun <R> select(transform: T.() -> R, copy: T.(R) -> T): OptionalSegment<R> =
+        OptionalSegment(
             { foldable.map(transform) },
             { value -> get.invoke().map { copy(it, value) }.fold({}, set) }
         )
 
     override fun filter(predicate: (T) -> Boolean): OptionalSegment<T> =
-        optionalSegmentOf({ foldable.filter(predicate) }, set)
+        OptionalSegment({ foldable.filter(predicate) }, set)
+
+    inline fun <reified R> filter() = filter(R::class.java::isInstance)
 
     @Suppress("UNCHECKED_CAST")
-    override fun <R> filter(type: Class<R>): OptionalSegment<R> =
-        optionalSegmentOf(
-            { foldable.filter(type::isInstance).map { it as R } },
-            { set(it as T) }
-        )
+    fun <R> cast(): OptionalSegment<R> =
+        OptionalSegment({ foldable.map { it as R } }, { set(it as T) })
 
-    override fun cast(): Segment<T> =
-        segmentOf({ foldable.getOrElse { throw ClassCastException() } }, set)
+    override fun toFoldable(): Foldable<T> = foldable
+
+    fun toSegment(): Segment<T> =
+        Segment({ foldable.getOrElse { throw ClassCastException() } }, set)
 
 }
+
+fun <T> segmentOfNullable(get: () -> T?, set: (T) -> Unit) =
+    OptionalSegment({ Foldable.maybe(get) }, set)

@@ -1,6 +1,6 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.segment.filter
+import io.lamart.gyro.segment.cast
 import io.lamart.gyro.segment.toSegment
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
@@ -9,7 +9,7 @@ import kotlin.test.*
 
 class OptionalSegmentTests {
 
-    private fun <T> optionalSegmentOf(value: T) = AtomicReference(value).toSegment().cast()
+    private fun <T> optionalSegmentOf(value: T) = AtomicReference(value).toSegment().toOptionalSegment()
 
     @Test
     fun select() {
@@ -27,7 +27,7 @@ class OptionalSegmentTests {
     @Test
     fun typeFilter() {
         optionalSegmentOf(Door.Open as Door)
-            .filter<Door.Open>()
+            .cast<Door.Open>()
             .get()
             .let {
                 assertNotNull(it)
@@ -35,7 +35,7 @@ class OptionalSegmentTests {
             }
 
         optionalSegmentOf(Door.Open as Door)
-            .filter<Door.Closed>()
+            .cast<Door.Closed>()
             .get()
             .let { assertNull(it) }
     }

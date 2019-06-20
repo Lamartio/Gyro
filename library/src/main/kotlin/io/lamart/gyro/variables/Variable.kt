@@ -1,31 +1,15 @@
 package io.lamart.gyro.variables
 
 import io.lamart.gyro.Record
-import io.lamart.gyro.segment.segmentOf
+import io.lamart.gyro.immutable.Immutable
+import io.lamart.gyro.segment.Segment
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 interface Variable<T> : VariableType<T>, Value<T> {
 
-    fun record(block: (T) -> T): Record<T>
-
-    companion object {
-
-        internal operator fun <T> invoke(get: () -> T, set: (T) -> Unit): Variable<T> =
-            VariableInstance(get, set)
-
-    }
-
-}
-
-private class VariableInstance<T>(private val get: () -> T, private val set: (T) -> Unit) : Variable<T> {
-
-    override fun get(): T = get.invoke()
-
-    override fun set(value: T) = set.invoke(value)
-
-    override fun update(block: (T) -> T) {
+    override fun update(block: T.() -> T) {
         get().let { before ->
             val after = block(before)
 
@@ -34,7 +18,7 @@ private class VariableInstance<T>(private val get: () -> T, private val set: (T)
         }
     }
 
-    override fun record(block: (T) -> T): Record<T> =
+    fun record(block: (T) -> T): Record<T> =
         get().let { before ->
             val after = block(before)
 
@@ -46,11 +30,21 @@ private class VariableInstance<T>(private val get: () -> T, private val set: (T)
 
 }
 
+private class VariableInstance<T>(private val get: () -> T, private val set: (T) -> Unit) : Variable<T> {
+
+    override fun get(): T = get.invoke()
+
+    override fun set(value: T) = set.invoke(value)
+
+}
+
+fun <T> AtomicReference<T>.toVariable(): Variable<T> = VariableInstance(::get, ::set)
+
 fun <T> variableOf(value: T) = AtomicReference(value).toVariable()
+fun <T> variableOf(get: () -> T, set: (T) -> Unit): Variable<T> = VariableInstance(get, set)
 
-fun <T> AtomicReference<T>.toVariable() = Variable(::get, ::set)
+fun <T> Variable<T>.toSegment() = Segment(::get, ::set)
 
-fun <T> Variable<T>.toSegment() = segmentOf(::get, ::set)
 
 fun <T> Variable<T>.toProperty(): ReadWriteProperty<Any?, T> =
     object : ReadWriteProperty<Any?, T> {

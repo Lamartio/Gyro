@@ -6,49 +6,41 @@ import io.lamart.gyro.variables.Value
 import io.lamart.gyro.variables.toSegment
 import io.lamart.gyro.variables.variableOf
 
-fun <T> immutableOf(value: T): Immutable<T, T> =
-    variableOf(value)
-        .toSegment()
-        .let { Immutable(it) }
-
-interface Immutable<T, N> : Copyable<T, N>, Value<T> {
-
-    fun <R> select(transform: N.() -> R, copy: N.(R) -> N): Immutable<T, R>
-
-    fun filter(predicate: (N) -> Boolean): Immutable<T, N>
-
-    fun <R> filter(type: Class<R>): Immutable<T, R>
-
-    companion object {
-
-        internal operator fun <T> invoke(segment: Segment<T>): Immutable<T, T> =
-            ImmutableInstance(segment::get, segment.cast())
-
-    }
-
-}
-
-inline fun <T, reified R> Immutable<T, *>.filter() = filter(R::class.java)
-
-private class ImmutableInstance<T, N>(
+class Immutable<T, N> private constructor(
     private val get: () -> T,
     private val next: OptionalSegment<N>
-) : Immutable<T, N> {
+) : Copyable<T, N>, Value<T> {
 
     override fun get(): T = get.invoke()
 
-    override fun <R> select(transform: N.() -> R, copy: N.(R) -> N) = wrap { select(transform, copy) }
+    fun <R> select(transform: N.() -> R, copy: N.(R) -> N) = wrap { select(transform, copy) }
 
-    override fun filter(predicate: (N) -> Boolean) = wrap { filter(predicate) }
+    fun filter(predicate: (N) -> Boolean) = wrap { filter(predicate) }
 
-    override fun <R> filter(type: Class<R>) = wrap { filter(type) }
+    inline fun <reified R> filter() = filter(R::class.java::isInstance)
 
-    fun <R> wrap(block: OptionalSegment<N>.() -> OptionalSegment<R>) =
-        ImmutableInstance(get, block(next))
+    fun <R> cast(): Immutable<T, R> = wrap { cast() }
+
+    inline fun <reified R> filterCast() = filter<R>().cast<R>()
+
+    private fun <R> wrap(block: OptionalSegment<N>.() -> OptionalSegment<R>) =
+        Immutable(get, block(next))
 
     override fun copy(block: (N) -> N): T {
         next.update(block)
         return get()
     }
 
+    companion object {
+
+        operator fun <T> invoke(segment: Segment<T>) =
+            Immutable(segment::get, segment.toOptionalSegment())
+
+    }
+
 }
+
+fun <T> immutableOf(value: T): Immutable<T, T> =
+    variableOf(value)
+        .toSegment()
+        .let(Immutable.Companion::invoke)

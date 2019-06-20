@@ -53,8 +53,7 @@ private class ObservableInstance<T>(
             .reduce { l, r -> { l(it); r(it) } }
     }
 
-    private inner class SubscriptionInstance(val observer: Observer<T>) :
-        Subscription {
+    private inner class SubscriptionInstance(val observer: Observer<T>) : Subscription {
 
         override fun unsubscribe() {
             synchronized(lock) {

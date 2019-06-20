@@ -12,8 +12,11 @@ interface Foldable<T> {
 
         fun <T> maybe(get: () -> T?): Foldable<T> = MaybeFoldable(get)
 
-        fun <T> wrap(get: () -> Foldable<T>): Foldable<T> = WrapFoldable(get)
+    }
 
+    sealed class Result {
+        object None : Result()
+        data class Some<T>(val value: T) : Result()
     }
 
 }
@@ -31,13 +34,8 @@ fun <T> Foldable<T>.getOrElse(default: () -> T): T = fold(default, { it })
 
 fun <T> Foldable<T>.getOrNull(): T? = fold({ null }, { it })
 
-fun <T> Foldable<T>.fold(block: (FoldResult) -> Unit): Unit =
-    fold({ block(FoldResult.None) }, { block(FoldResult.Some(it)) })
-
-sealed class FoldResult {
-    object None : FoldResult()
-    data class Some<T>(val value: T) : FoldResult()
-}
+fun <T> Foldable<T>.fold(block: (Foldable.Result) -> Unit): Unit =
+    fold({ block(Foldable.Result.None) }, { block(Foldable.Result.Some(it)) })
 
 private class SomeFoldable<T>(private val get: () -> T) : Foldable<T> {
 
@@ -54,11 +52,5 @@ private class NoneFoldable<T> : Foldable<T> {
 private class MaybeFoldable<T>(private val get: () -> T?) : Foldable<T> {
 
     override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = get()?.let(ifSome) ?: ifNone()
-
-}
-
-private class WrapFoldable<T>(private val get: () -> Foldable<T>) : Foldable<T> {
-
-    override fun <R> fold(ifNone: () -> R, ifSome: (T) -> R): R = get().fold(ifNone, ifSome)
 
 }

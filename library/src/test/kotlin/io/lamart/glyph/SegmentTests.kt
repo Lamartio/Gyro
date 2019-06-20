@@ -1,6 +1,6 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.segment.filter
+import io.lamart.gyro.segment.cast
 import io.lamart.gyro.segment.toSegment
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
@@ -23,7 +23,7 @@ class SegmentTests {
     @Test
     fun typeFilter() {
         segmentOf(Door.Open as Door)
-            .filter<Door.Open>()
+            .cast<Door.Open>()
             .get()
             .let {
                 assertNotNull(it)
@@ -31,7 +31,7 @@ class SegmentTests {
             }
 
         segmentOf(Door.Open as Door)
-            .filter<Door.Closed>()
+            .cast<Door.Closed>()
             .get()
             .let { assertNull(it) }
     }
