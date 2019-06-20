@@ -6,6 +6,7 @@ import io.lamart.gyro.getOrElse
 import io.lamart.gyro.map
 import io.lamart.gyro.variables.OptionalVariable
 import io.lamart.gyro.variables.optionalVariableOf
+import java.lang.NullPointerException
 
 class OptionalSegment<T>(
     private val get: () -> Foldable<T>,
@@ -33,9 +34,9 @@ class OptionalSegment<T>(
     override fun toFoldable(): Foldable<T> = foldable
 
     fun toSegment(): Segment<T> =
-        Segment({ foldable.getOrElse { throw ClassCastException() } }, set)
+        Segment({ foldable.getOrElse { throw NullPointerException() } }, set)
 
 }
 
-fun <T> segmentOfNullable(get: () -> T?, set: (T) -> Unit) =
+fun <T> segmentOfNullable(get: () -> T?, set: (T) -> Unit): OptionalSegment<T> =
     OptionalSegment({ Foldable.maybe(get) }, set)

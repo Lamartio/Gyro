@@ -45,12 +45,10 @@ private class OptionalVariableInstance<T>(
 
 }
 
-fun <T> variableOfNullable(value: T?) = AtomicReference(value).toOptionalVariable()
+fun <T> variableOfNullable(value: T?): OptionalVariable<T> =
+    AtomicReference(value).run { optionalVariableOf<T>({ Foldable.maybe(::get) }, ::set) }
 
 fun <T> optionalVariableOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalVariable<T> =
     OptionalVariableInstance(get, set)
-
-fun <T> AtomicReference<T?>.toOptionalVariable(): OptionalVariable<T> =
-    OptionalVariableInstance({ Foldable.maybe(::get) }, ::set)
 
 fun <T> OptionalVariable<T>.toOptionalSegment() = segmentOfNullable(::get, ::set)

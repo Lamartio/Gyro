@@ -14,7 +14,7 @@ class VariableTests {
     fun update() {
         val variable = variable(false)
 
-        variable.update { !it }
+        variable.update { !this }
         assertTrue(variable.get())
     }
 

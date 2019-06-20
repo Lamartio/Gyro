@@ -2,29 +2,21 @@ package io.lamart.gyro.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.lamart.gyro.observable.Emitter
+import io.lamart.gyro.observable.Sender
 import io.lamart.gyro.observable.Subscription
+import io.lamart.gyro.segment.OptionalSegment
 import io.lamart.gyro.segment.segmentOfNullable
 
-fun <T> MutableLiveData<T>.toSegment() = segmentOfNullable({ value }, ::setValue)
+fun <T> MutableLiveData<T>.toOptionalSegment(): OptionalSegment<T> = segmentOfNullable({ value }, ::setValue)
 
-enum class LiveDataType {
-    SET_VALUE,
-    POST_VALUE
-}
-
-fun <T> Emitter<T>.toLiveData(type: LiveDataType = LiveDataType.SET_VALUE): LiveData<T> =
-    object : LiveData<T>() {
+fun <T> Sender<T>.toLiveData(onNext: MutableLiveData<T>.(value: T) -> Unit = { setValue(it) }): LiveData<T> =
+    object : MutableLiveData<T>() {
 
         private lateinit var subscription: Subscription
-        private val observer: (T) -> Unit = when (type) {
-            LiveDataType.SET_VALUE -> ::setValue
-            LiveDataType.POST_VALUE -> ::postValue
-        }
 
         override fun onActive() {
             super.onActive()
-            this@toLiveData.subscribe(observer)
+            subscription = this@toLiveData.subscribe { onNext(it) }
         }
 
         override fun onInactive() {

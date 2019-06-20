@@ -15,18 +15,18 @@ class Immutable<T, N> private constructor(
 
     fun <R> select(transform: N.() -> R, copy: N.(R) -> N) = wrap { select(transform, copy) }
 
-    fun filter(predicate: (N) -> Boolean) = wrap { filter(predicate) }
+    fun filter(predicate: N.() -> Boolean) = wrap { filter(predicate) }
 
     inline fun <reified R> filter() = filter(R::class.java::isInstance)
 
-    fun <R> cast(): Immutable<T, R> = wrap { cast() }
+    fun <R> cast(): Immutable<T, R> = wrap { cast<R>() }
 
     inline fun <reified R> filterCast() = filter<R>().cast<R>()
 
     private fun <R> wrap(block: OptionalSegment<N>.() -> OptionalSegment<R>) =
         Immutable(get, block(next))
 
-    override fun copy(block: (N) -> N): T {
+    override fun copy(block: N.() -> N): T {
         next.update(block)
         return get()
     }
