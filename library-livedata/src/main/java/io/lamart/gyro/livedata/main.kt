@@ -2,7 +2,7 @@ package io.lamart.gyro.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.lamart.gyro.observable.Observable
+import io.lamart.gyro.observable.Emitter
 import io.lamart.gyro.observable.Subscription
 import io.lamart.gyro.segment.segmentOfNullable
 
@@ -13,7 +13,7 @@ enum class LiveDataType {
     POST_VALUE
 }
 
-fun <T> Observable<T>.toLiveData(type: LiveDataType = LiveDataType.SET_VALUE): LiveData<T> =
+fun <T> Emitter<T>.toLiveData(type: LiveDataType = LiveDataType.SET_VALUE): LiveData<T> =
     object : LiveData<T>() {
 
         private lateinit var subscription: Subscription
