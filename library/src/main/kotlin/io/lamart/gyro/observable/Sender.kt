@@ -1,14 +1,16 @@
 package io.lamart.gyro.observable
 
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 
 interface Sender<T> {
     fun subscribe(receiver: Receiver<T>): Subscription
 }
 
-fun <T> senderOf(block: (receiver: Receiver<T>) -> Subscription): Sender<T> =
+fun <T> senderOf(subscribe: (receiver: Receiver<T>) -> Subscription): Sender<T> =
     object : Sender<T> {
-        override fun subscribe(receiver: Receiver<T>): Subscription = block(receiver)
+        override fun subscribe(receiver: Receiver<T>): Subscription = subscribe(receiver)
     }
 
 fun <T, R> Sender<T>.map(transform: (T) -> R): Sender<R> =
@@ -27,6 +29,23 @@ fun <T, R> Sender<T>.flatMap(transform: (T) -> Iterable<R>): Sender<R> =
 fun <T> Sender<T>.filter(predicate: (T) -> Boolean): Sender<T> =
     wrap { value, receiver ->
         value.takeIf(predicate)?.let(receiver)
+    }
+
+fun <T> Sender<T>.beforeEach(block: (T) -> Unit): Sender<T> =
+    wrap { value, receiver ->
+        value.also(block).let(receiver)
+    }
+
+fun <T> Sender<T>.afterEach(block: (T) -> Unit): Sender<T> =
+    wrap { value, receiver ->
+        value.also(receiver).let(block)
+    }
+
+fun <T> Sender<T>.on(executor: Executor = Executors.newSingleThreadExecutor()): Sender<T> =
+    wrap { value, receiver ->
+        executor.execute {
+            receiver(value)
+        }
     }
 
 @Suppress("UNCHECKED_CAST")
