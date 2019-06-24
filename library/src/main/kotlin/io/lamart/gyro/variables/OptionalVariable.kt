@@ -8,6 +8,13 @@ import java.util.concurrent.atomic.AtomicReference
 
 interface OptionalVariable<T> : VariableType<T>, OptionalValue<T> {
 
+    fun update(block: T.() -> T): Unit? =
+        get()?.let { before ->
+            block(before)
+                .takeIf { it != before }
+                ?.let(::set)
+        }
+
     fun record(block: (T) -> T): Record<T>?
 
 }

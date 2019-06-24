@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/userContent"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <include
+            android:layout_gravity="center"
+            android:id="@+id/signIn"
+            layout="@layout/sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <include
+            android:layout_gravity="center"
+            android:id="@+id/home"
+            layout="@layout/home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+</FrameLayout>

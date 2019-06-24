@@ -40,9 +40,11 @@ private class EmitterInstance<T>(private var value: T, private val lock: Any) : 
 
     private fun invalidatePublisher() {
         publisher = subscriptions
-            .asSequence()
-            .map { it.receiver }
-            .reduce { l, r -> { l(it); r(it) } }
+            .takeIf { it.isNotEmpty() }
+            ?.asSequence()
+            ?.map { it.receiver }
+            ?.reduce { l, r -> { l(it); r(it) } }
+            ?: {}
     }
 
     private inner class SubscriptionInstance(receiver: Receiver<T>) : Subscription {

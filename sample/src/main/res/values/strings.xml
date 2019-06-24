@@ -6,4 +6,7 @@
     <string name="stop">Stop</string>
     <string name="start">Start</string>
     <string name="bellDescription">The bell is %s</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="welcom">Welcome at the home screen</string>
 </resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:gravity="center"
+              android:showDividers="middle"
+              android:divider="@drawable/vertical_divider"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:text="Sign in please"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <EditText
+            android:id="@+id/name"
+            android:layout_width="180dip"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10" />
+
+    <EditText
+            android:id="@+id/pass"
+            android:layout_width="180dip"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10" />
+
+    <Button
+            android:text="@string/sign_in"
+            android:layout_width="180dip"
+            android:layout_height="wrap_content"
+            android:id="@+id/doSignIn" />
+
+    <ProgressBar
+            android:id="@+id/loading"
+            android:indeterminate="true"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/signInError"/>
+
+</LinearLayout>

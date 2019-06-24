@@ -11,7 +11,7 @@ class ImmutableTests {
     @Test
     fun copy() {
         immutableOf(Bell(false))
-            .copy { Bell(!it.isRinging) }
+            .copy { Bell(!isRinging) }
             .isRinging
             .let { assertTrue(it) }
     }
@@ -20,7 +20,7 @@ class ImmutableTests {
     fun select() {
         immutableOf(Bell(false))
             .select({ isRinging }, { copy(isRinging = it) })
-            .copy { !it }
+            .copy { !this }
             .isRinging
             .let { assertTrue(it) }
     }
@@ -28,14 +28,14 @@ class ImmutableTests {
     @Test
     fun predicateFilter() {
         immutableOf(Bell(false))
-            .filter { !it.isRinging }
-            .copy { it.copy(isRinging = !it.isRinging) }
+            .filter { !isRinging }
+            .copy { copy(isRinging = !isRinging) }
             .isRinging
             .let { assertTrue(it) }
 
         immutableOf(Bell(false))
-            .filter { it.isRinging }
-            .copy { it.copy(isRinging = !it.isRinging) }
+            .filter { isRinging }
+            .copy { copy(isRinging = !isRinging) }
             .isRinging
             .let { assertFalse(it) }
     }
@@ -43,11 +43,11 @@ class ImmutableTests {
     @Test
     fun typeFilter() {
         immutableOf(Door.Open as Door)
-            .filter { it is Door.Open }
+            .filter<Door.Open>()
             .copy { Door.Closed }
             .let { assertSame(Door.Closed, it) }
         immutableOf(Door.Open as Door)
-            .filter { it is Door.Closed }
+            .filter<Door.Closed>()
             .copy { Door.Closed }
             .let { assertSame(Door.Open, it) }
     }

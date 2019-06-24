@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "io.lamart.gyro"
         minSdkVersion 14
@@ -19,17 +20,18 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "io.reactivex.rxjava2:rxjava:2.2.9"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha01'
-    implementation project (':library-livedata')
-    implementation project (':library-rxjava2')
+    implementation project(':library-livedata')
+    implementation project(':library-rxjava2')
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
     implementation 'androidx.core:core-ktx:1.2.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

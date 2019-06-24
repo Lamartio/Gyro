@@ -1,10 +1,8 @@
 apply plugin: 'org.jetbrains.kotlin.jvm'
 
-sourceCompatibility = 1.8
-
 dependencies {
     api project(':library')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "io.reactivex.rxjava2:rxjava:2.2.9"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
     testImplementation 'junit:junit:4.12'
 }

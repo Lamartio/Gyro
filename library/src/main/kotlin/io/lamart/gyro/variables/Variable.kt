@@ -1,7 +1,6 @@
 package io.lamart.gyro.variables
 
 import io.lamart.gyro.Record
-import io.lamart.gyro.immutable.Immutable
 import io.lamart.gyro.segment.Segment
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
@@ -9,14 +8,12 @@ import kotlin.reflect.KProperty
 
 interface Variable<T> : VariableType<T>, Value<T> {
 
-    override fun update(block: T.() -> T) {
+    fun update(block: T.() -> T): Unit =
         get().let { before ->
-            val after = block(before)
-
-            if (before != after)
-                set(after)
+            block(before)
+                .takeIf { it != before }
+                ?.let(::set)
         }
-    }
 
     fun record(block: (T) -> T): Record<T> =
         get().let { before ->
