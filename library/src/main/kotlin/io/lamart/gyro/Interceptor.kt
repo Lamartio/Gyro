@@ -7,3 +7,5 @@ interface Interceptor<T, R> {
     fun delegate(set: (T) -> Unit): (value: R) -> Unit
 
 }
+
+typealias Delegate<T, R> = (set: (T) -> Unit) -> (value: R) -> Unit

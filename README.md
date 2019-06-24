@@ -153,6 +153,25 @@ Within the `signIn` function, the network sign-in is only called when `update` c
 Now the system is in a `SignIn` state and can progress by a call of the `success` or `failure` function. Both of them update the state by setting the `user` property, which will call `Segment.set`.
 
 # Side effects
+When having a production app, it can happen that you want to extend the functionality of a `Segment` without altering its signature. These type of functions are often called `MiddleWare` or side effects. In Gyro they are called `Interceptor` since it intercepts the getter and the setter of a state. 
+
+Rarely it is necessary to intercept the getter, so there is a convenience overload for intercepting a setter. The example below demonstrates how an interception can check whether the current state differs from the newly created state and only set the value when it changed.
+
+```kotlin
+fun <T> Segment<T>.checkEquality(): Segment<T> =
+    intercept { set: (T) -> Unit ->
+    
+        { value ->
+            if (value != this@checkEquality.get()) {
+                set(value)
+            }
+        }
+    }
+```
+# Threading
+The `Segment<T>` is thread safe, since it does not hold any mutable state. However it is important that the source of a `Segment<T>` is, since that is the owner of mutable state. The source is often a `BehaviorSubject`, `MutableLiveData` or a `Emitter` which are all holding state with a lock, so those are thread safe.
+
+It is advised to update the state only from a single thread, since that will create the most predictable behavior. Although it is not said that that single thread has to be the main thread.
 
 
 # License

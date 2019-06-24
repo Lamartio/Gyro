@@ -1,5 +1,6 @@
 package io.lamart.gyro.segment
 
+import io.lamart.gyro.Delegate
 import io.lamart.gyro.Foldable
 import io.lamart.gyro.Interceptor
 import io.lamart.gyro.immutable.Immutable
@@ -31,10 +32,10 @@ class Segment<T>(
     fun <R> intercept(interceptor: Interceptor<T, R>): Segment<R> =
         intercept(interceptor::transform, interceptor::delegate)
 
-    fun intercept(delegate: (set: (value: T) -> Unit) -> (value: T) -> Unit): Segment<T> =
+    fun intercept(delegate: Delegate<T,T>): Segment<T> =
         intercept({ it }, delegate)
 
-    fun <R> intercept(transform: (T) -> R, delegate: (set: (value: T) -> Unit) -> (value: R) -> Unit): Segment<R> =
+    fun <R> intercept(transform: (T) -> R, delegate: Delegate<T,R>): Segment<R> =
         Segment({ get().let(transform) }, delegate(::set))
 
     fun toOptionalSegment(): OptionalSegment<T> =

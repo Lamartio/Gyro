@@ -31,12 +31,12 @@ class OptionalSegment<T>(
     fun <R> intercept(interceptor: Interceptor<T, R>): OptionalSegment<R> =
         intercept(interceptor::transform, interceptor::delegate)
 
-    fun intercept(delegate: (set: (value: T) -> Unit) -> (value: T) -> Unit): OptionalSegment<T> =
+    fun intercept(delegate: Delegate<T, T>): OptionalSegment<T> =
         intercept({ it }, delegate)
 
     fun <R> intercept(
         transform: (T) -> R,
-        delegate: (set: (value: T) -> Unit) -> (value: R) -> Unit
+        delegate: Delegate<T, R>
     ): OptionalSegment<R> = OptionalSegment({ foldable.map(transform) }, delegate(::set))
 
     fun toSegment(ifNone: () -> T = { throw NullPointerException() }): Segment<T> =
