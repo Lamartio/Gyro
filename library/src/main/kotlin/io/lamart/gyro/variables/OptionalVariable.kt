@@ -31,24 +31,11 @@ private class OptionalVariableInstance<T>(
 
     override fun set(value: T) = set.invoke(value)
 
-    override fun update(block: (T) -> T) {
-        foldable.getOrNull()?.let { before ->
-            val after = block(before)
-
-            if (before != after)
-                set(after)
-        }
-    }
+    override fun update(block: (T) -> T): Unit? =
+        foldable.getOrNull()?.let(block)?.let(set)
 
     override fun record(block: (T) -> T): Record<T>? =
-        foldable.fold({ null }) { before ->
-            val after = block(before)
-
-            if (before != after)
-                set(after)
-
-            Record(before, after)
-        }
+        foldable.getOrNull()?.let { Record(it, block(it)) }
 
 }
 

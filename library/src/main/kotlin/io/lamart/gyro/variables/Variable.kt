@@ -8,22 +8,11 @@ import kotlin.reflect.KProperty
 
 interface Variable<T> : VariableType<T>, Value<T> {
 
-    fun update(block: T.() -> T): Unit =
-        get().let { before ->
-            block(before)
-                .takeIf { it != before }
-                ?.let(::set)
-        }
+    fun update(block: T.() -> T) =
+        get().let(block).let(::set)
 
     fun record(block: (T) -> T): Record<T> =
-        get().let { before ->
-            val after = block(before)
-
-            if (before != after)
-                set(after)
-
-            Record(before, after)
-        }
+        get().let { Record(it, block(it)) }
 
 }
 
