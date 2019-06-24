@@ -7,19 +7,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
-import io.lamart.gyro.*
-import io.lamart.gyro.actions.Actions
-import io.lamart.gyro.utils.Component
-import io.lamart.gyro.utils.component
+import io.lamart.gyro.Door
+import io.lamart.gyro.R
+import io.lamart.gyro.utils.actions
 
-class DoorFragment : Fragment(), Component {
-
-    override val state: LiveData<State> by component { state }
-    override val actions: Actions by component { actions }
+class DoorFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.door, container, false)
@@ -33,15 +28,18 @@ class DoorFragment : Fragment(), Component {
         openDoor.setOnClickListener { actions.openDoor() }
         closeDoor.setOnClickListener { actions.closeDoor() }
 
-        state
+        actions
+            .data
             .map { state -> state.house.door.description }
             .distinctUntilChanged()
             .observe(this, Observer { doorDescription.text = it })
-        state
+        actions
+            .data
             .map { state -> state.house.door.isOpen }
             .distinctUntilChanged()
             .observe(this, Observer { closeDoor.isEnabled = it })
-        state
+        actions
+            .data
             .map { state -> !state.house.door.isOpen }
             .distinctUntilChanged()
             .observe(this, Observer { openDoor.isEnabled = it })

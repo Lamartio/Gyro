@@ -31,7 +31,6 @@ fun <T> variableOf(get: () -> T, set: (T) -> Unit): Variable<T> = VariableInstan
 
 fun <T> Variable<T>.toSegment() = Segment(::get, ::set)
 
-
 fun <T> Variable<T>.toProperty(): ReadWriteProperty<Any?, T> =
     object : ReadWriteProperty<Any?, T> {
 

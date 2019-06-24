@@ -27,8 +27,6 @@ class Segment<T>(
     fun <R> cast() =
         Segment({ get() as R }, { set(it as T) })
 
-    override fun toFoldable(): Foldable<T> = Foldable.some(get)
-
     fun toOptionalSegment(): OptionalSegment<T> =
         OptionalSegment({ Foldable.some(get) }, set)
 

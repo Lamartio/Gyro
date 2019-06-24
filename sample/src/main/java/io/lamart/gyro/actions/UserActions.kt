@@ -3,6 +3,7 @@ package io.lamart.gyro.actions
 import android.os.Handler
 import android.os.Looper
 import io.lamart.gyro.User
+import io.lamart.gyro.segment.OptionalSegment
 import io.lamart.gyro.segment.Segment
 import io.lamart.gyro.variables.toProperty
 
@@ -17,15 +18,16 @@ class UserActions(private val segment: Segment<User>) {
             ?.let { someNetworkSignIn(name, pass, ::onSuccess, ::onFailure) }
     }
 
-    private fun onSuccess(token: String) =
-        segment.update { User.SignedIn(token) }
+    private fun onSuccess(token: String) {
+        user = User.SignedIn(token)
+    }
 
-    private fun onFailure(error: Throwable) =
-        segment.update { User.NotSignedIn(error.message) }
+    private fun onFailure(error: Throwable) {
+        user = User.NotSignedIn(error.message)
+    }
 
     fun signOut() {
         user = User.NotSignedIn()
-        segment.update { User.NotSignedIn() }
     }
 
 }

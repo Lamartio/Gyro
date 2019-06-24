@@ -22,7 +22,7 @@ class OptionalSegment<T>(
             { value -> get.invoke().map { copy(it, value) }.fold({}, set) }
         )
 
-    override fun filter(predicate: (T) -> Boolean): OptionalSegment<T> =
+    override fun filter(predicate: T.() -> Boolean): OptionalSegment<T> =
         OptionalSegment({ foldable.filter(predicate) }, set)
 
     inline fun <reified R> filter() = filter(R::class.java::isInstance)
@@ -30,8 +30,6 @@ class OptionalSegment<T>(
     @Suppress("UNCHECKED_CAST")
     fun <R> cast(): OptionalSegment<R> =
         OptionalSegment({ foldable.map { it as R } }, { set(it as T) })
-
-    override fun toFoldable(): Foldable<T> = foldable
 
     fun toSegment(): Segment<T> =
         Segment({ foldable.getOrElse { throw NullPointerException() } }, set)

@@ -8,14 +8,14 @@ import io.lamart.gyro.segment.Segment
  * A `MutableLiveData` that is ensured to give a value.
  */
 
-class BehaviorLiveData<T>(private val default: T) : MutableLiveData<T>() {
+class BehaviorLiveData<T>(default: T) : MutableLiveData<T>() {
 
     init {
         value = default
     }
 
     @NonNull
-    override fun getValue(): T = super.getValue() ?: default
+    override fun getValue(): T = super.getValue()!!
 
     fun toSegment() = Segment(::getValue, ::setValue)
 

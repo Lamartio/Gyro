@@ -1,11 +1,11 @@
 package io.lamart.gyro.utils
 
 import androidx.fragment.app.Fragment
+import io.lamart.gyro.actions.Actions
 
-fun <T> Fragment.component(block: Component.() -> T): Lazy<T> =
-    lazy {
+val Fragment.actions: Actions
+    get() =
         requireContext()
             .applicationContext
-            .let { it as Component }
-            .run(block)
-    }
+            .let { it as Actions.Owner }
+            .actions

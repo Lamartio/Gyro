@@ -1,17 +1,14 @@
 package io.lamart.gyro
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import io.lamart.gyro.actions.Actions
-import io.lamart.gyro.livedata.toLiveData
 import io.lamart.gyro.observable.Emitter
-import io.lamart.gyro.utils.Component
-import io.lamart.gyro.variables.toSegment
+import io.lamart.gyro.actions.toActions
+import io.lamart.gyro.livedata.BehaviorLiveData
 
-class MainApplication : Application(), Component {
+class MainApplication : Application(), Actions.Owner {
 
-    private val emitter = Emitter(State())
-    override val state: LiveData<State> = emitter.toLiveData()
-    override val actions: Actions = emitter.toSegment().let(::Actions)
+    private val emitter = BehaviorLiveData(State())
+    override val actions: Actions = emitter.toActions()
 
 }
