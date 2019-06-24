@@ -1,9 +1,6 @@
 package io.lamart.gyro.segment
 
-import io.lamart.gyro.Foldable
-import io.lamart.gyro.filter
-import io.lamart.gyro.getOrElse
-import io.lamart.gyro.map
+import io.lamart.gyro.*
 import io.lamart.gyro.variables.OptionalVariable
 import io.lamart.gyro.variables.optionalVariableOf
 import java.lang.NullPointerException
@@ -31,8 +28,19 @@ class OptionalSegment<T>(
     fun <R> cast(): OptionalSegment<R> =
         OptionalSegment({ foldable.map { it as R } }, { set(it as T) })
 
-    fun toSegment(): Segment<T> =
-        Segment({ foldable.getOrElse { throw NullPointerException() } }, set)
+    fun <R> intercept(interceptor: Interceptor<T, R>): OptionalSegment<R> =
+        intercept(interceptor::transform, interceptor::delegate)
+
+    fun intercept(delegate: (set: (value: T) -> Unit) -> (value: T) -> Unit): OptionalSegment<T> =
+        intercept({ it }, delegate)
+
+    fun <R> intercept(
+        transform: (T) -> R,
+        delegate: (set: (value: T) -> Unit) -> (value: R) -> Unit
+    ): OptionalSegment<R> = OptionalSegment({ foldable.map(transform) }, delegate(::set))
+
+    fun toSegment(ifNone: () -> T = { throw NullPointerException() }): Segment<T> =
+        Segment({ foldable.getOrElse(ifNone) }, set)
 
 }
 

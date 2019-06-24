@@ -2,7 +2,6 @@ package io.lamart.gyro
 
 import android.app.Application
 import io.lamart.gyro.actions.Actions
-import io.lamart.gyro.observable.Emitter
 import io.lamart.gyro.actions.toActions
 import io.lamart.gyro.livedata.BehaviorLiveData
 

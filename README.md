@@ -66,9 +66,9 @@ fun emitterExample(house: House) {
 ```
 The above examples all create the same functionality. The `Subject`, `LiveData` and `Emitter` distribute state changes  and have operators like `map`, `filter` and `distinctUntilChanged`. All of them have an extension function to create a `Segment`, which is responsible for changing the state. 
 
-Do notice that since `Emitter` is written in Kotlin which has null safety. Therefore it is the only one that produces a `Segment` instead of a `OptionalSegment`.
+Do notice that since `Emitter` is written in Kotlin it has has null-safety. Therefore it is the only one that produces a `Segment` instead of a `OptionalSegment`.
 
-With an observable state and a way of updating the state, we have all the ingredients for building an interactive application. For making the UI as simple as possible, we define an API that is an `Sender` (Gyro's alternative for Rx's `Observable`) and contains the functions necessary for the UI.
+With an observable state and a way of updating the state, we have all the ingredients for building an interactive application. For making the UI as simple as possible, we define an API that is a `Sender` (Gyro's alternative for Rx's `Observable`) and contains the functions necessary for the UI.
 
 ```kotlin
 interface Actions : Sender<State> {
@@ -95,6 +95,9 @@ class DoorFragment : Fragment() {
 }
 ```
 # Asynchronicity
+
+
+# Side effects
 
 # License
    Copyright 2019 Danny Lamarti

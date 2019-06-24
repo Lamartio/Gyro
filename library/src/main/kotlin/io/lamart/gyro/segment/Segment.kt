@@ -1,6 +1,7 @@
 package io.lamart.gyro.segment
 
 import io.lamart.gyro.Foldable
+import io.lamart.gyro.Interceptor
 import io.lamart.gyro.immutable.Immutable
 import io.lamart.gyro.variables.Variable
 import io.lamart.gyro.variables.variableOf
@@ -26,6 +27,15 @@ class Segment<T>(
     @Suppress("UNCHECKED_CAST")
     fun <R> cast() =
         Segment({ get() as R }, { set(it as T) })
+
+    fun <R> intercept(interceptor: Interceptor<T, R>): Segment<R> =
+        intercept(interceptor::transform, interceptor::delegate)
+
+    fun intercept(delegate: (set: (value: T) -> Unit) -> (value: T) -> Unit): Segment<T> =
+        intercept({ it }, delegate)
+
+    fun <R> intercept(transform: (T) -> R, delegate: (set: (value: T) -> Unit) -> (value: R) -> Unit): Segment<R> =
+        Segment({ get().let(transform) }, delegate(::set))
 
     fun toOptionalSegment(): OptionalSegment<T> =
         OptionalSegment({ Foldable.some(get) }, set)

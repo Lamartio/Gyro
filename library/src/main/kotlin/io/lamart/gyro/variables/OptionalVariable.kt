@@ -6,7 +6,6 @@ import io.lamart.gyro.getOrElse
 import io.lamart.gyro.getOrNull
 import io.lamart.gyro.segment.segmentOfNullable
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -51,10 +50,10 @@ fun <T> optionalVariableOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalVa
 
 fun <T> OptionalVariable<T>.toOptionalSegment() = segmentOfNullable(::get, ::set)
 
-fun <T> OptionalVariable<T>.toProperty(ifNull: () -> T = { throw NullPointerException() }) =
+fun <T> OptionalVariable<T>.toProperty(ifNone: () -> T = { throw NullPointerException() }) =
     object : ReadWriteProperty<Any?, T> {
 
-        override fun getValue(thisRef: Any?, property: KProperty<*>): T = this@toProperty.toFoldable().getOrElse(ifNull)
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T = this@toProperty.toFoldable().getOrElse(ifNone)
 
         override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = this@toProperty.set(value)
 

@@ -30,7 +30,7 @@ fun <T> Foldable<T>.filter(predicate: (T) -> Boolean): Foldable<T> =
         { it.takeIf(predicate)?.let { Foldable.some { it } } ?: Foldable.none() }
     )
 
-fun <T> Foldable<T>.getOrElse(default: () -> T): T = fold(default, { it })
+fun <T> Foldable<T>.getOrElse(ifNone: () -> T): T = fold(ifNone, { it })
 
 fun <T> Foldable<T>.getOrNull(): T? = fold({ null }, { it })
 
