@@ -3,8 +3,7 @@ package io.lamart.gyro.actions
 import android.os.Handler
 import android.os.Looper
 import io.lamart.gyro.User
-import io.lamart.gyro.segment.OptionalSegment
-import io.lamart.gyro.segment.Segment
+import io.lamart.gyro.segments.Segment
 import io.lamart.gyro.variables.toProperty
 
 class UserActions(private val segment: Segment<User>) {

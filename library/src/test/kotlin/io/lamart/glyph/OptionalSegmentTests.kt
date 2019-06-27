@@ -1,7 +1,7 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.segment.filterCast
-import io.lamart.gyro.segment.toSegment
+import io.lamart.gyro.segments.filterCast
+import io.lamart.gyro.segments.toSegment
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.*
@@ -43,7 +43,7 @@ class OptionalSegmentTests {
     @Test
     fun predicateFilter() {
         optionalSegmentOf(Bell(false))
-            .filter { !it.isRinging }
+            .filter { !isRinging }
             .get()
             .let {
                 assertNotNull(it)
@@ -51,7 +51,7 @@ class OptionalSegmentTests {
             }
 
         optionalSegmentOf(Bell(false))
-            .filter { it.isRinging }
+            .filter { isRinging }
             .get()
             .let { assertNull(it) }
     }

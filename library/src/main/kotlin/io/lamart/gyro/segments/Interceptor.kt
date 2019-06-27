@@ -1,4 +1,4 @@
-package io.lamart.gyro
+package io.lamart.gyro.segments
 
 interface Interceptor<T, R> {
 

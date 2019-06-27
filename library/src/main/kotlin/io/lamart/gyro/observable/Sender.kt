@@ -77,5 +77,5 @@ fun <T, R> Sender<T>.wrap(delegate: (value: T, receiver: Receiver<R>) -> Unit): 
 
 fun <T, R> Sender<T>.lift(transform: (receiver: Receiver<R>) -> Receiver<T>): Sender<R> =
     senderOf { receiver ->
-        receiver.let(transform).let(this@lift::subscribe)
+        receiver.let(transform).let(::subscribe)
     }

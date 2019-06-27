@@ -1,7 +1,7 @@
 package io.lamart.gyro.immutable
 
-import io.lamart.gyro.segment.OptionalSegment
-import io.lamart.gyro.segment.Segment
+import io.lamart.gyro.segments.OptionalSegment
+import io.lamart.gyro.segments.Segment
 import io.lamart.gyro.variables.Value
 import io.lamart.gyro.variables.toSegment
 import io.lamart.gyro.variables.variableOf

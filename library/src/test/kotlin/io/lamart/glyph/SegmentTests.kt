@@ -1,8 +1,7 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.segment.Segment
-import io.lamart.gyro.segment.filterCast
-import io.lamart.gyro.segment.toSegment
+import io.lamart.gyro.segments.filterCast
+import io.lamart.gyro.segments.toSegment
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.*

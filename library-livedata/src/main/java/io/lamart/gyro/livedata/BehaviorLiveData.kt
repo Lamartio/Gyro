@@ -1,8 +1,9 @@
 package io.lamart.gyro.livedata
 
 import androidx.annotation.NonNull
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.lamart.gyro.segment.Segment
+import io.lamart.gyro.segments.Segment
 
 /**
  * A `MutableLiveData` that is ensured to give a value.

@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.lamart.gyro.observable.Sender
 import io.lamart.gyro.observable.Subscription
-import io.lamart.gyro.segment.OptionalSegment
-import io.lamart.gyro.segment.segmentOfNullable
+import io.lamart.gyro.segments.OptionalSegment
+import io.lamart.gyro.segments.segmentOfNullable
 
 fun <T> MutableLiveData<T>.toOptionalSegment(): OptionalSegment<T> = segmentOfNullable({ value }, ::setValue)
 

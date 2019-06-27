@@ -1,4 +1,4 @@
-package io.lamart.gyro.segment
+package io.lamart.gyro.segments
 
 import io.lamart.gyro.*
 import io.lamart.gyro.variables.OptionalVariable

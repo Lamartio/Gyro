@@ -2,8 +2,8 @@ package io.lamart.gyro.rxjava2
 
 import io.lamart.gyro.Foldable
 import io.lamart.gyro.observable.Sender
-import io.lamart.gyro.segment.OptionalSegment
-import io.lamart.gyro.segment.segmentOfNullable
+import io.lamart.gyro.segments.OptionalSegment
+import io.lamart.gyro.segments.segmentOfNullable
 import io.lamart.gyro.variables.OptionalVariable
 import io.lamart.gyro.variables.optionalVariableOf
 import io.reactivex.Observable

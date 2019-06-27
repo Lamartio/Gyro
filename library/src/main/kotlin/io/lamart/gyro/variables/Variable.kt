@@ -1,7 +1,7 @@
 package io.lamart.gyro.variables
 
 import io.lamart.gyro.Record
-import io.lamart.gyro.segment.Segment
+import io.lamart.gyro.segments.Segment
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

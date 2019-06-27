@@ -4,7 +4,7 @@ import io.lamart.gyro.Foldable
 import io.lamart.gyro.Record
 import io.lamart.gyro.getOrElse
 import io.lamart.gyro.getOrNull
-import io.lamart.gyro.segment.segmentOfNullable
+import io.lamart.gyro.segments.segmentOfNullable
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
