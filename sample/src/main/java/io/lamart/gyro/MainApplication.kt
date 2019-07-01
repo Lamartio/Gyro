@@ -10,7 +10,7 @@ import io.lamart.gyro.livedata.store.toLiveDataStore
 
 class MainApplication : Application(), LiveDataStore<State, Actions> {
 
-    private val store = MutableLiveData(State()).toLiveDataStore(actionsFactory = { Actions(it) })
+    private val store: LiveDataStore<State, Actions> = MutableLiveData(State()).toLiveDataStore(actionsFactory = { Actions(it) })
 
     override val data: LiveData<State> = store.data
     override val actions: Actions = store.actions

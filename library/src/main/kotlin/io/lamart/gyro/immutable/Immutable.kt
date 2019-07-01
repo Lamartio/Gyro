@@ -6,6 +6,10 @@ import io.lamart.gyro.variables.Value
 import io.lamart.gyro.variables.toSegment
 import io.lamart.gyro.variables.variableOf
 
+/**
+ * An Immutable holds the same operators as a `Segment`, but is just meant to create a copy of the given object.
+ */
+
 class Immutable<T, N> private constructor(
     private val get: () -> T,
     private val next: OptionalSegment<N>

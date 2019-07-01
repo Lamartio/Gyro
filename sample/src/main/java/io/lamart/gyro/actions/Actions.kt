@@ -3,30 +3,14 @@ package io.lamart.gyro.actions
 import io.lamart.gyro.State
 import io.lamart.gyro.segments.Segment
 
-interface Actions {
-    val user: UserActions
+class Actions(val segment: Segment<State>) {
 
-    fun openDoor()
-    fun closeDoor()
-    fun startRinging()
-    fun stopRinging()
-
-    companion object {
-
-        operator fun invoke(segment: Segment<State>): Actions = ActionsInstance(segment)
-
-    }
-
-}
-
-private class ActionsInstance(val segment: Segment<State>) : Actions {
-
-    override val user: UserActions =
+    val user: UserActions =
         segment
             .select({ user }, { copy(user = it) })
             .let(::UserActions)
 
-    override fun openDoor() {
+    fun openDoor() {
         segment
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
@@ -35,7 +19,7 @@ private class ActionsInstance(val segment: Segment<State>) : Actions {
             .set(true)
     }
 
-    override fun closeDoor() {
+    fun closeDoor() {
         segment
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
@@ -44,7 +28,7 @@ private class ActionsInstance(val segment: Segment<State>) : Actions {
             .set(false)
     }
 
-    override fun startRinging() =
+    fun startRinging() =
         segment
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
@@ -54,7 +38,7 @@ private class ActionsInstance(val segment: Segment<State>) : Actions {
             .set(true)
 
 
-    override fun stopRinging() {
+    fun stopRinging() {
         segment
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
