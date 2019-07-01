@@ -1,12 +1,7 @@
 # Gyro
-Building graphical
 
-- General way of working
-- Asynchronous actions
-- interops
 
 #Getting started
-For understanding why Gyro is 
 ```kotlin
 data class House(val door: Door = Door())
 

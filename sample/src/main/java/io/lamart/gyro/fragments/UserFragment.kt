@@ -16,6 +16,7 @@ import androidx.lifecycle.map
 import io.lamart.gyro.R
 import io.lamart.gyro.User
 import io.lamart.gyro.utils.actions
+import io.lamart.gyro.utils.data
 
 class UserFragment : Fragment() {
 
@@ -41,23 +42,19 @@ class UserFragment : Fragment() {
         }
         signOutButton.setOnClickListener { actions.user.signOut() }
 
-        actions
-            .data
+       data
             .map { it.user !is User.SignedIn }
             .distinctUntilChanged()
             .observe(this, Observer { signInView.isVisible = it })
-        actions
-            .data
+        data
             .map { it.user is User.SignedIn }
             .distinctUntilChanged()
             .observe(this, Observer { homeView.isVisible = it })
-        actions
-            .data
+        data
             .map { it.user is User.SigningIn }
             .distinctUntilChanged()
             .observe(this, Observer { loadingView.isVisible = it })
-        actions
-            .data
+        data
             .map {
                 when (it.user) {
                     is User.NotSignedIn -> it.user.reason

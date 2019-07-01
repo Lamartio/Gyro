@@ -1,13 +1,9 @@
 package io.lamart.gyro.actions
 
-import androidx.lifecycle.LiveData
 import io.lamart.gyro.State
-import io.lamart.gyro.livedata.BehaviorLiveData
-
-fun BehaviorLiveData<State>.toActions(): Actions = ActionsInstance(this)
+import io.lamart.gyro.segments.Segment
 
 interface Actions {
-    val data: LiveData<State>
     val user: UserActions
 
     fun openDoor()
@@ -15,17 +11,16 @@ interface Actions {
     fun startRinging()
     fun stopRinging()
 
-    interface Owner {
+    companion object {
 
-        val actions: Actions
+        operator fun invoke(segment: Segment<State>): Actions = ActionsInstance(segment)
 
     }
 
 }
 
-private class ActionsInstance(override val data: BehaviorLiveData<State>) : Actions {
+private class ActionsInstance(val segment: Segment<State>) : Actions {
 
-    private val segment = data.toSegment()
     override val user: UserActions =
         segment
             .select({ user }, { copy(user = it) })

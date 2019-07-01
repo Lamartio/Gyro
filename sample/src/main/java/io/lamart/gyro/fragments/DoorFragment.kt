@@ -13,6 +13,7 @@ import androidx.lifecycle.map
 import io.lamart.gyro.Door
 import io.lamart.gyro.R
 import io.lamart.gyro.utils.actions
+import io.lamart.gyro.utils.data
 
 class DoorFragment : Fragment() {
 
@@ -28,18 +29,15 @@ class DoorFragment : Fragment() {
         openDoor.setOnClickListener { actions.openDoor() }
         closeDoor.setOnClickListener { actions.closeDoor() }
 
-        actions
-            .data
+        data
             .map { state -> state.house.door.description }
             .distinctUntilChanged()
             .observe(this, Observer { doorDescription.text = it })
-        actions
-            .data
+        data
             .map { state -> state.house.door.isOpen }
             .distinctUntilChanged()
             .observe(this, Observer { closeDoor.isEnabled = it })
-        actions
-            .data
+        data
             .map { state -> !state.house.door.isOpen }
             .distinctUntilChanged()
             .observe(this, Observer { openDoor.isEnabled = it })

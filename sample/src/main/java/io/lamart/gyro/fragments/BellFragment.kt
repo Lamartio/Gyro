@@ -13,9 +13,9 @@ import androidx.lifecycle.map
 import io.lamart.gyro.Bell
 import io.lamart.gyro.R
 import io.lamart.gyro.utils.actions
+import io.lamart.gyro.utils.data
 
 class BellFragment : Fragment() {
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.bell, container, false)
@@ -29,18 +29,15 @@ class BellFragment : Fragment() {
         startRinging.setOnClickListener { actions.startRinging() }
         stopRinging.setOnClickListener { actions.stopRinging() }
 
-        actions
-            .data
+        data
             .map { state -> state.house.door.bell.description }
             .distinctUntilChanged()
             .observe(this, Observer { bellDescription.text = it })
-        actions
-            .data
+        data
             .map { state -> !state.house.door.isOpen && !state.house.door.bell.isRinging }
             .distinctUntilChanged()
             .observe(this, Observer { startRinging.isEnabled = it })
-        actions
-            .data
+        data
             .map { state -> state.house.door.bell.isRinging }
             .distinctUntilChanged()
             .observe(this, Observer { stopRinging.isEnabled = it })

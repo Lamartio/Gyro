@@ -1,5 +1,6 @@
 package io.lamart.gyro.observable
 
+import com.sun.webkit.dom.RectImpl
 import io.lamart.gyro.variables.Variable
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -39,10 +40,11 @@ private class EmitterInstance<T>(private var value: T, private val lock: Any) : 
         }
 
     private fun invalidatePublisher() {
+        val receiver :Receiver<T> = {  }
         publisher = subscriptions
             .asSequence()
             .map { it.receiver }
-            .fold({}) { l, r -> { l(it); r(it) } }
+            .fold(receiver) { l, r -> { l(it); r(it) } }
     }
 
     private inner class SubscriptionInstance(receiver: Receiver<T>) : Subscription {
