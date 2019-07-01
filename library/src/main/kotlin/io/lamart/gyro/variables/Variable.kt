@@ -12,7 +12,9 @@ interface Variable<T> : VariableType<T>, Value<T> {
         get().let(block).let(::set)
 
     fun record(block: (T) -> T): Record<T> =
-        get().let { Record(it, block(it)) }
+        get()
+            .let { Record(it, block(it)) }
+            .also { (_, after) -> set(after) }
 
 }
 
