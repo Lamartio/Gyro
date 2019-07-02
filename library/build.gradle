@@ -3,7 +3,6 @@ apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.jetbrains.kotlin:kotlin-test:1.3.31'
 }
@@ -18,9 +17,9 @@ publish {
     userOrg = 'lamartio'
     groupId = 'io.lamart.gyro'
     artifactId = 'gyro'
-    publishVersion = '0.9.1'
+    publishVersion = rootProject.version
     uploadName 'Gyro'
-    desc = 'State management with a functional approach'
+    desc = 'State management with a functional approach.'
     website = 'https://github.com/Lamartio/Gyro'
 
     bintrayUser properties['BINTRAY_USER']

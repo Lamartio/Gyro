@@ -1,6 +1,5 @@
 package io.lamart.gyro.observable
 
-import com.sun.webkit.dom.RectImpl
 import io.lamart.gyro.variables.Variable
 import java.util.concurrent.atomic.AtomicBoolean
 

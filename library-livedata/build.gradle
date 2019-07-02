@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
@@ -7,14 +8,36 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 1
-        versionName "0.9.0"
+        versionName "$rootProject.version"
     }
     buildToolsVersion '28.0.3'
 }
 
 dependencies {
-    api project(':library')
+    api "io.lamart.gyro:gyro:$rootProject.version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'android.arch.lifecycle:livedata-core:1.1.1'
+    api 'android.arch.lifecycle:livedata-core:1.1.1'
     testImplementation 'junit:junit:4.12'
+}
+
+def properties = project.rootProject.file('local.properties').withDataInputStream { stream ->
+    def props = new Properties()
+    props.load(stream)
+    props
+}
+
+publish {
+    userOrg = 'lamartio'
+    groupId = 'io.lamart.gyro'
+    artifactId = 'gyro-livedata-interop'
+    publishVersion = rootProject.version
+    uploadName 'Gyro-LiveData-interop'
+    desc = 'State management with a functional approach. Interop for working with LiveData.'
+    website = 'https://github.com/Lamartio/Gyro'
+
+    bintrayUser properties['BINTRAY_USER']
+    bintrayKey properties['BINTRAY_KEY']
+
+    dryRun = false
+    override true
 }

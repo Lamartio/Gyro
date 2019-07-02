@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./gradlew clean :library:build :library:bintrayUpload $@
+sh publish-lib.sh $@ && sh publish-livedata.sh $@ && sh publish-rxjava2.sh $@
