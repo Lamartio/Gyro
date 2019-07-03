@@ -10,12 +10,12 @@ The guide below explains the parts that make Gyro. All of the code snippets are 
 # TLDR
 ```kotlin
 fun tldr(user: User = User.NotSignedIn()) {
-    // 1. Observable source (could be: Rx.BehaviorSubject or LiveData)
+    // 1. Create a observable source (could be: Rx.BehaviorSubject or LiveData)
     val emitter = Emitter(user)
-    // 2. Create a store and use its destructure it
+    // 2. Create a store and destructure its values
     val (observable, actions) = emitter.toStore(::UserActions)
 
-    // 3. Subscribe to the given observable
+    // 3. Subscribe to the given observable 
     observable.subscribe { user -> println(user) }
 
     // 4. Call some actions
@@ -109,7 +109,7 @@ fun liveDataExample(house: House) {
 fun emitterExample(house: House) {
     val emitter = Emitter(house)
     val segment: Segment<House> = emitter.toSegment()
-    val state: House = segment.get()
+    val state: House = emitter.get()
 
     emitter.set(House())
 }
