@@ -31,7 +31,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha01'
     implementation project(':library-livedata')
-    implementation project(':library-rxjava2')
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
     implementation 'androidx.core:core-ktx:1.2.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

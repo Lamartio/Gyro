@@ -7,6 +7,22 @@ Often the `Reducer` is seen as the silver bullet in state management, but in pra
 
 The guide below explains the parts that make Gyro. All of the code snippets are available in the sample included in this repo. I recommend cloning and running it, since it explains the details that couldn't fit in this short document.
 
+# TLDR
+```kotlin
+fun tldr(user: User = User.NotSignedIn()) {
+    // 1. Observable source (could be: Rx.BehaviorSubject or LiveData)
+    val emitter = Emitter(user)
+    // 2. Create a store and use its destructure it
+    val (observable, actions) = emitter.toStore(::UserActions)
+
+    // 3. Subscribe to the given observable
+    observable.subscribe { user -> println(user) }
+
+    // 4. Call some actions
+    actions.signIn("hello", "world")
+    actions.signOut()
+}
+```
 # Getting started
 For this example we will be working with a state that is a `House` and it has a `Door` that has a `Bell` that can be ringing or not.
 ```kotlin
