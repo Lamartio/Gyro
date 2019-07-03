@@ -6,10 +6,14 @@ import io.lamart.gyro.segments.Segment
 import io.lamart.gyro.variables.Variable
 import io.lamart.gyro.variables.toSegment
 
+interface SenderStoreType<T, A> : Store<A> {
+    val sender: Sender<T>
+}
+
 data class SenderStore<T, A>(
-    val sender: Sender<T>,
+    override val sender: Sender<T>,
     override val actions: A
-) : Store<A>
+) : SenderStoreType<T, A>
 
 fun <T, A> Emitter<T>.toStore(actionsFactory: (segment: Segment<T>) -> A) =
     toSegment()

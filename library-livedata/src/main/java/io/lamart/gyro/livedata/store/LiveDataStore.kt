@@ -8,10 +8,14 @@ import io.lamart.gyro.segments.Segment
 import io.lamart.gyro.store.Store
 import io.lamart.gyro.variables.Variable
 
+interface LiveDataStoreType<T, A> : Store<A> {
+    val data: LiveData<T>
+}
+
 data class LiveDataStore<T, A>(
-    val data: LiveData<T>,
+    override val data: LiveData<T>,
     override val actions: A
-) : Store<A>
+): LiveDataStoreType<T, A>
 
 fun <T, A> BehaviorLiveData<T>.toLiveDataStore(actionsFactory: (segment: Segment<T>) -> A) =
     toSegment()

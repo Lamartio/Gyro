@@ -4,13 +4,11 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.lamart.gyro.actions.Actions
-import io.lamart.gyro.actions.UserActions
 import io.lamart.gyro.livedata.store.LiveDataStore
+import io.lamart.gyro.livedata.store.LiveDataStoreType
 import io.lamart.gyro.livedata.store.toLiveDataStore
-import io.lamart.gyro.observable.Emitter
-import io.lamart.gyro.store.toStore
 
-class MainApplication : Application(), LiveDataStore<State, Actions> {
+class MainApplication : Application(), LiveDataStoreType<State, Actions> {
 
     private val store: LiveDataStore<State, Actions> = MutableLiveData(State()).toLiveDataStore(actionsFactory = { Actions(it) })
 

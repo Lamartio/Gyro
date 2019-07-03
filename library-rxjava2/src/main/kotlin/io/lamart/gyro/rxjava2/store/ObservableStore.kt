@@ -7,10 +7,14 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.ReplaySubject
 
+interface ObservableStoreType<T, A> : Store<A> {
+    val observable: Observable<T>
+}
+
 data class ObservableStore<T, A>(
-    val observable: Observable<T>,
+    override val observable: Observable<T>,
     override val actions: A
-) : Store<A>
+) : ObservableStoreType<T, A>
 
 fun <T, A> BehaviorSubject<T>.toStore(
     actionsFactory: (segment: Segment<T>) -> A,
