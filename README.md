@@ -1,9 +1,17 @@
+[ ![Download](https://api.bintray.com/packages/lamartio/maven/Gyro-RxJava2-interop/images/download.svg) ](https://bintray.com/lamartio/maven/Gyro-RxJava2-interop/_latestVersion)
 # Gyro
 Gyro is a state management library that takes a functional approach in managing the mutable state (a.k.a. the single source of truth).
 
-Instead of dispatching an `Action` through a series of sub-systems and reducers, an `Action` is represented as function that is supplied with the necessities for validating and updating the state. As a consequence, managaing state is much simpler and thereby more predictable.
+Instead of dispatching an `Action` through a series of sub-systems and reducers, an `Action` is represented as function that is supplied with the necessities for validating and updating the state. As a consequence, managing state is much simpler and thereby more predictable.
 
 Often the `Reducer` is seen as the silver bullet in state management, but in practice it is hard to track where actions are coming from and what they are changing. Therefore Gyro only works with functions that directly change the state.
+
+```groovy
+implementation "io.lamart.gyro:gyro:+"
+
+implementation "io.lamart.gyro:gyro-livedata-interop:+"
+implementation "io.lamart.gyro:gyro-rxjava2-interop:+"
+```
 
 The guide below explains the parts that make Gyro. All of the code snippets are available in the sample included in this repo. I recommend cloning and running it, since it explains the details that couldn't fit in this short document.
 
