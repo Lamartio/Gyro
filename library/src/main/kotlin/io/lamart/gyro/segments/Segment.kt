@@ -27,14 +27,11 @@ class Segment<T>(
     fun <R> cast() =
         Segment({ get() as R }, { set(it as T) })
 
-    fun <R> intercept(interceptor: Interceptor<T, R>): Segment<R> =
-        intercept(interceptor::transform, interceptor::delegate)
-
-    fun intercept(delegate: Delegate<T, T>): Segment<T> =
+    fun intercept(delegate: Segment<T>.(value: T) -> Void): Segment<T> =
         intercept({ it }, delegate)
 
-    fun <R> intercept(transform: (T) -> R, delegate: Delegate<T, R>): Segment<R> =
-        Segment({ get().let(transform) }, delegate(::set))
+    fun <R> intercept(transform: (T) -> R, delegate: Segment<T>.(value: R) -> Void): Segment<R> =
+        Segment({ get().let(transform) }, { delegate(this, it) })
 
     fun toOptionalSegment(): OptionalSegment<T> =
         OptionalSegment({ Foldable.some(get) }, set)

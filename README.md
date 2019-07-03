@@ -218,12 +218,9 @@ Rarely it is necessary to intercept the getter, so there is a convenience overlo
 
 ```kotlin
 fun <T> Segment<T>.checkEquality(): Segment<T> =
-    intercept { set: (T) -> Unit ->
-    
-        { value ->
-            if (value != this@checkEquality.get()) {
-                set(value)
-            }
+    intercept { value ->
+        if (value != this.get()) {
+            this.set(value)
         }
     }
 ```
