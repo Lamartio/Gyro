@@ -3,15 +3,15 @@ package io.lamart.gyro.actions
 import android.os.Handler
 import android.os.Looper
 import io.lamart.gyro.User
-import io.lamart.gyro.segments.Segment
+import io.lamart.gyro.mutable.Mutable
 import io.lamart.gyro.variables.toProperty
 
-class UserActions(private val segment: Segment<User>) {
+class UserActions(private val mutable: Mutable<User>) {
 
-    private var user by segment.toProperty()
+    private var user by mutable.toProperty()
 
     fun signIn(name: String, pass: String) {
-        segment
+        mutable
             .filter<User.NotSignedIn>()
             .update { User.SigningIn }
             ?.let { someNetworkSignIn(name, pass, ::onSuccess, ::onFailure) }

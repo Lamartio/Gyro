@@ -2,12 +2,12 @@ package io.lamart.gyro.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.lamart.gyro.mutable.OptionalMutable
+import io.lamart.gyro.mutable.mutableOfNullable
 import io.lamart.gyro.observable.Sender
 import io.lamart.gyro.observable.Subscription
-import io.lamart.gyro.segments.OptionalSegment
-import io.lamart.gyro.segments.segmentOfNullable
 
-fun <T> MutableLiveData<T>.toOptionalSegment(): OptionalSegment<T> = segmentOfNullable({ value }, ::setValue)
+fun <T> MutableLiveData<T>.toOptionalMutable(): OptionalMutable<T> = mutableOfNullable({ value }, ::setValue)
 
 fun <T> Sender<T>.toLiveData(onNext: MutableLiveData<T>.(value: T) -> Unit = { setValue(it) }): LiveData<T> =
     object : MutableLiveData<T>() {

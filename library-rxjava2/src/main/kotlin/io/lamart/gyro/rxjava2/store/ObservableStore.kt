@@ -1,7 +1,7 @@
 package io.lamart.gyro.rxjava2.store
 
-import io.lamart.gyro.rxjava2.toOptionalSegment
-import io.lamart.gyro.segments.Segment
+import io.lamart.gyro.mutable.Mutable
+import io.lamart.gyro.rxjava2.toOptionalMutable
 import io.lamart.gyro.store.Store
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -17,19 +17,19 @@ data class ObservableStore<T, A>(
 ) : ObservableStoreType<T, A>
 
 fun <T, A> BehaviorSubject<T>.toStore(
-    actionsFactory: (segment: Segment<T>) -> A,
+    actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
 ) =
-    toOptionalSegment()
-        .toSegment(ifNone)
+    toOptionalMutable()
+        .toMutable(ifNone)
         .let(actionsFactory)
         .let { ObservableStore(this, it) }
 
 fun <T, A> ReplaySubject<T>.toStore(
-    actionsFactory: (segment: Segment<T>) -> A,
+    actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
 ) =
-    toOptionalSegment()
-        .toSegment(ifNone)
+    toOptionalMutable()
+        .toMutable(ifNone)
         .let(actionsFactory)
         .let { ObservableStore(this, it) }

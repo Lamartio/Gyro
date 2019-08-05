@@ -1,7 +1,7 @@
 package io.lamart.gyro.variables
 
 import io.lamart.gyro.Record
-import io.lamart.gyro.segments.Segment
+import io.lamart.gyro.mutable.Mutable
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -31,7 +31,7 @@ fun <T> AtomicReference<T>.toVariable(): Variable<T> = VariableInstance(::get, :
 fun <T> variableOf(value: T) = AtomicReference(value).toVariable()
 fun <T> variableOf(get: () -> T, set: (T) -> Unit): Variable<T> = VariableInstance(get, set)
 
-fun <T> Variable<T>.toSegment() = Segment(::get, ::set)
+fun <T> Variable<T>.toMutable() = Mutable(::get, ::set)
 
 fun <T> Variable<T>.toProperty(): ReadWriteProperty<Any?, T> =
     object : ReadWriteProperty<Any?, T> {

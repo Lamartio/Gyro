@@ -14,7 +14,7 @@ android {
 }
 
 dependencies {
-    api "io.lamart.gyro:gyro:$rootProject.version"
+    implementation project(':library')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     api 'android.arch.lifecycle:livedata-core:1.1.1'
     testImplementation 'junit:junit:4.12'

@@ -4,7 +4,7 @@ import io.lamart.gyro.Foldable
 import io.lamart.gyro.Record
 import io.lamart.gyro.getOrElse
 import io.lamart.gyro.getOrNull
-import io.lamart.gyro.segments.segmentOfNullable
+import io.lamart.gyro.mutable.mutableOfNullable
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -48,7 +48,7 @@ fun <T> variableOfNullable(value: T?): OptionalVariable<T> =
 fun <T> optionalVariableOf(get: () -> Foldable<T>, set: (T) -> Unit): OptionalVariable<T> =
     OptionalVariableInstance(get, set)
 
-fun <T> OptionalVariable<T>.toOptionalSegment() = segmentOfNullable(::get, ::set)
+fun <T> OptionalVariable<T>.toOptionalMutable() = mutableOfNullable(::get, ::set)
 
 fun <T> OptionalVariable<T>.toProperty(ifNone: () -> T = { throw NullPointerException() }) =
     object : ReadWriteProperty<Any?, T> {

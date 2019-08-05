@@ -1,19 +1,19 @@
 package io.lamart.glyph
 
-import io.lamart.gyro.segments.filterCast
-import io.lamart.gyro.segments.toSegment
+import io.lamart.gyro.mutable.filterCast
+import io.lamart.gyro.mutable.toMutable
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.*
 
 
-class OptionalSegmentTests {
+class OptionalMutableTests {
 
-    private fun <T> optionalSegmentOf(value: T) = AtomicReference(value).toSegment().toOptionalSegment()
+    private fun <T> optionalMutableOf(value: T) = AtomicReference(value).toMutable().toOptionalMutable()
 
     @Test
     fun select() {
-        optionalSegmentOf(Bell(false))
+        optionalMutableOf(Bell(false))
             .select({ isRinging }, { copy(isRinging = it) })
             .record { !it }
             .let {
@@ -26,7 +26,7 @@ class OptionalSegmentTests {
 
     @Test
     fun typeFilterCast() {
-        optionalSegmentOf(Door.Open as Door)
+        optionalMutableOf(Door.Open as Door)
             .filterCast<Door.Open>()
             .get()
             .let {
@@ -34,7 +34,7 @@ class OptionalSegmentTests {
                 assertSame(it, Door.Open)
             }
 
-        optionalSegmentOf(Door.Open as Door)
+        optionalMutableOf(Door.Open as Door)
             .filterCast<Door.Closed>()
             .get()
             .let { assertNull(it) }
@@ -42,7 +42,7 @@ class OptionalSegmentTests {
 
     @Test
     fun predicateFilter() {
-        optionalSegmentOf(Bell(false))
+        optionalMutableOf(Bell(false))
             .filter { !isRinging }
             .get()
             .let {
@@ -50,7 +50,7 @@ class OptionalSegmentTests {
                 assertSame(it.isRinging, false)
             }
 
-        optionalSegmentOf(Bell(false))
+        optionalMutableOf(Bell(false))
             .filter { isRinging }
             .get()
             .let { assertNull(it) }

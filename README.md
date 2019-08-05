@@ -43,7 +43,7 @@ data class Bell(val isRinging: Boolean = false)
 
 ## Creating actions
 
-One of the interactions we want to build is that of opening the door when it's closed and closing the door when it's open. In conventional Kotlin that means we have to create a copy of the door with a different `isOpen` state and a copy of the house of the new door. This code isn't the cleanest and Gyro fixes that by introducing a `Segment<House>`.
+One of the interactions we want to build is that of opening the door when it's closed and closing the door when it's open. In conventional Kotlin that means we have to create a copy of the door with a different `isOpen` state and a copy of the house of the new door. This code isn't the cleanest and Gyro fixes that by introducing a `Mutable<House>`.
 ```kotlin
 // Kotlin is creating nested copies, which is a great system, but the readability is not that great.
 fun openDoor(house: House): House {
@@ -54,7 +54,7 @@ fun openDoor(house: House): House {
 }
 
 // Gyro reorganizes the copy method, which improves readability and allows segregation.
-fun openDoor(house: Segment<House>) {
+fun openDoor(house: Mutable<House>) {
     house
         .select({ door }, { copy(door = it) })
         .filter { !isOpen }
@@ -64,13 +64,13 @@ fun openDoor(house: Segment<House>) {
 ```
 State management always consists of the steps: validating the current state and changing the state when is valid. In the above example we check whether the door is closed and open it when it is so.
 
-Often opening the door is called from a user interaction, such a button click. Such UI is not responsible for supplying the `Segment` argument, so we'll wrap such actions in an object.
+Often opening the door is called from a user interaction, such a button click. Such UI is not responsible for supplying the `Mutable` argument, so we'll wrap such actions in an object.
 
 ```kotlin
-class Actions(private val segment: Segment<House>) : Actions {
+class Actions(private val mutable: Mutable<House>) : Actions {
 
     fun openDoor() {
-        segment
+        mutable
             .select({ door }, { copy(door = it) })
             .filter { !isOpen }
             .select({ isOpen }, { copy(isOpen = it) })
@@ -95,12 +95,12 @@ class DoorFragment : Fragment() {
 ```
 ## Setting up listeners
 
-A `Segment` is responsible for maintaining state changes, but UI is only interested in listening to those changes. Therefore a Segment can easily obtained from a observable source such as a Rx's `BehaviorSubject` and `ReplaySubject` or Android's `MutableLiveData`. If you don't want to add additional dependencies; Gyro includes an observable source called `Emitter`, which has the popular operators from Rx.
+A `Mutable` is responsible for maintaining state changes, but UI is only interested in listening to those changes. Therefore a Mutable can easily obtained from a observable source such as a Rx's `BehaviorSubject` and `ReplaySubject` or Android's `MutableLiveData`. If you don't want to add additional dependencies; Gyro includes an observable source called `Emitter`, which has the popular operators from Rx.
 
 ```kotlin
 fun subjectExample(house: House) {
     val subject = BehaviorSubject.createDefault(house)
-    val segment: OptionalSegment<House> = subject.toOptionalSegment()
+    val mutable: OptionalMutable<House> = subject.toOptionalMutable()
     val state: House? = subject.value
 
     subject.onNext(House())
@@ -108,7 +108,7 @@ fun subjectExample(house: House) {
 
 fun liveDataExample(house: House) {
     val data = MutableLiveData<House>().apply { value = House() }
-    val segment: OptionalSegment<House> = data.toOptionalSegment()
+    val mutable: OptionalMutable<House> = data.toOptionalMutable()
     val state: House? = data.value
 
     data.value = House()
@@ -116,16 +116,16 @@ fun liveDataExample(house: House) {
 
 fun emitterExample(house: House) {
     val emitter = Emitter(house)
-    val segment: Segment<House> = emitter.toSegment()
+    val mutable: Mutable<House> = emitter.toMutable()
     val state: House = emitter.get()
 
     emitter.set(House())
 }
 ```
 
-The above examples all create the same functionality. The `Subject`, `LiveData` and `Emitter` distribute state changes and have operators like `map`, `filter` and `distinctUntilChanged`. All of them have an extension function to create a `Segment`, which is responsible for changing the state. 
+The above examples all create the same functionality. The `Subject`, `LiveData` and `Emitter` distribute state changes and have operators like `map`, `filter` and `distinctUntilChanged`. All of them have an extension function to create a `Mutable`, which is responsible for changing the state. 
 
-Do notice that since `Emitter` is written in Kotlin it has has null-safety. Therefore it is the only one that produces a `Segment` instead of a `OptionalSegment`.
+Do notice that since `Emitter` is written in Kotlin it has has null-safety. Therefore it is the only one that produces a `Mutable` instead of a `OptionalMutable`.
 
 With a way of observing state changes and applying state changes, the UI can become fully interactive:
 
@@ -152,7 +152,7 @@ The graphical part of an application is only interested in the state and how it 
 ```kotlin
     private val store: LiveDataStore<State, Actions> = 
         MutableLiveData(State())
-            .toLiveDataStore(actionsFactory = { segment: Segment<State> -> Actions(segment) })
+            .toLiveDataStore(actionsFactory = { mutable: Mutable<State> -> Actions(mutable) })
             
     val data: LiveData<State> = store.data
     val actions: Actions = store.actions
@@ -163,7 +163,7 @@ Such `Store` is simply a container for holding the actions and the observable so
 # Asynchronicity
 When implementing a sign-in functionality, we let the lengthy network call happen on a background thread. During its operation we show a spinner and on success we show the screen behind the sign-in screen. 
 
-It is important that, when building such functionality, you have clear in which states your system (read: `Segment`) can be and what action can trigger a state change. This can be modeled in a (simplified) transition table:
+It is important that, when building such functionality, you have clear in which states your system (read: `Mutable`) can be and what action can trigger a state change. This can be modeled in a (simplified) transition table:
 
 | # 	| Current State 	| Action  	| New State   	|
 |---	|---------------	|---------	|-------------	|
@@ -190,12 +190,12 @@ private fun someNetworkSignIn(
     onFailure: (error: Throwable) -> Unit
 ) { /*...*/ }
 
-class UserActions(private val segment: Segment<User>) {
+class UserActions(private val mutable: Mutable<User>) {
 
-    private var user by segment.toProperty()
+    private var user by mutable.toProperty()
 
     fun signIn(name: String, pass: String) {
-        segment
+        mutable
             .filter<User.NotSignedIn>()
             .update { User.SigningIn }
             ?.let { someNetworkSignIn(name, pass, ::success, ::failure) }
@@ -215,17 +215,17 @@ class UserActions(private val segment: Segment<User>) {
 
 }
 ```
-Within the `signIn` function, the network sign-in is only called when `update` call returns a non-null value. It will do that only if its segment is valid, or in other words: When the user is not signed in.
+Within the `signIn` function, the network sign-in is only called when `update` call returns a non-null value. It will do that only if its mutable is valid, or in other words: When the user is not signed in.
 
-Now the system is in a `SigningIn` state and can progress by a call of the `success` or `failure` function. Both of them update the state by setting the `user` property, which will call `Segment.set`.
+Now the system is in a `SigningIn` state and can progress by a call of the `success` or `failure` function. Both of them update the state by setting the `user` property, which will call `Mutable.set`.
 
 # Side effects
-When having a production app, it can happen that you want to extend the functionality of a `Segment` without altering its signature. These type of functions are often called `MiddleWare` or side effects. In Gyro they are called `Interceptor` since it intercepts the getter and the setter of a state. 
+When having a production app, it can happen that you want to extend the functionality of a `Mutable` without altering its signature. These type of functions are often called `MiddleWare` or side effects. In Gyro they are called `Interceptor` since it intercepts the getter and the setter of a state. 
 
 Rarely it is necessary to intercept the getter, so there is a convenience overload for intercepting a setter. The example below demonstrates how an interception can check whether the current state differs from the newly created state and only set the value when it changed.
 
 ```kotlin
-fun <T> Segment<T>.checkEquality(): Segment<T> =
+fun <T> Mutable<T>.checkEquality(): Mutable<T> =
     intercept { value ->
         if (value != this.get()) {
             this.set(value)
@@ -233,7 +233,7 @@ fun <T> Segment<T>.checkEquality(): Segment<T> =
     }
 ```
 # Threading
-The `Segment<T>` is thread safe, since it does not hold any mutable state. However it is important that the source of a `Segment<T>` is, since that is the owner of mutable state. The source is often a `BehaviorSubject`, `MutableLiveData` or a `Emitter` which are all holding state with a lock, so those are thread safe.
+The `Mutable<T>` is thread safe, since it does not hold any mutable state. However it is important that the source of a `Mutable<T>` is, since that is the owner of mutable state. The source is often a `BehaviorSubject`, `MutableLiveData` or a `Emitter` which are all holding state with a lock, so those are thread safe.
 
 It is advised to update the state only from a single thread, since that will create the most predictable behavior. Although it is not said that that single thread has to be the main thread.
 

@@ -1,17 +1,17 @@
 package io.lamart.gyro.actions
 
 import io.lamart.gyro.State
-import io.lamart.gyro.segments.Segment
+import io.lamart.gyro.mutable.Mutable
 
-class Actions(val segment: Segment<State>) {
+class Actions(val mutable: Mutable<State>) {
 
     val user: UserActions =
-        segment
+        mutable
             .select({ user }, { copy(user = it) })
             .let(::UserActions)
 
     fun openDoor() {
-        segment
+        mutable
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
             .filter { !isOpen }
@@ -20,7 +20,7 @@ class Actions(val segment: Segment<State>) {
     }
 
     fun closeDoor() {
-        segment
+        mutable
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
             .filter { isOpen }
@@ -29,7 +29,7 @@ class Actions(val segment: Segment<State>) {
     }
 
     fun startRinging() =
-        segment
+        mutable
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
             .select({ bell }, { copy(bell = it) })
@@ -39,7 +39,7 @@ class Actions(val segment: Segment<State>) {
 
 
     fun stopRinging() {
-        segment
+        mutable
             .select({ house }, { copy(house = it) })
             .select({ door }, { copy(door = it) })
             .select({ bell }, { copy(bell = it) })

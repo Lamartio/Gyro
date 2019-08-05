@@ -1,18 +1,18 @@
 package io.lamart.gyro.immutable
 
-import io.lamart.gyro.segments.OptionalSegment
-import io.lamart.gyro.segments.Segment
+import io.lamart.gyro.mutable.OptionalMutable
+import io.lamart.gyro.mutable.Mutable
 import io.lamart.gyro.variables.Value
-import io.lamart.gyro.variables.toSegment
+import io.lamart.gyro.variables.toMutable
 import io.lamart.gyro.variables.variableOf
 
 /**
- * An Immutable holds the same operators as a `Segment`, but is just meant to create a copy of the given object.
+ * An Immutable holds the same operators as a `Mutable`, but is just meant to create a copy of the given object.
  */
 
 class Immutable<T, N> private constructor(
     private val get: () -> T,
-    private val next: OptionalSegment<N>
+    private val next: OptionalMutable<N>
 ) : Copyable<T, N>, Value<T> {
 
     override fun get(): T = get.invoke()
@@ -27,7 +27,7 @@ class Immutable<T, N> private constructor(
 
     inline fun <reified R> filterCast() = filter<R>().cast<R>()
 
-    private fun <R> wrap(block: OptionalSegment<N>.() -> OptionalSegment<R>) =
+    private fun <R> wrap(block: OptionalMutable<N>.() -> OptionalMutable<R>) =
         Immutable(get, block(next))
 
     override fun copy(block: N.() -> N): T {
@@ -37,8 +37,8 @@ class Immutable<T, N> private constructor(
 
     companion object {
 
-        operator fun <T> invoke(segment: Segment<T>) =
-            Immutable(segment::get, segment.toOptionalSegment())
+        operator fun <T> invoke(mutable: Mutable<T>) =
+            Immutable(mutable::get, mutable.toOptionalMutable())
 
     }
 
@@ -46,5 +46,5 @@ class Immutable<T, N> private constructor(
 
 fun <T> immutableOf(value: T): Immutable<T, T> =
     variableOf(value)
-        .toSegment()
+        .toMutable()
         .let(Immutable.Companion::invoke)

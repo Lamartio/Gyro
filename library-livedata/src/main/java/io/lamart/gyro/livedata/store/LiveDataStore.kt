@@ -3,10 +3,9 @@ package io.lamart.gyro.livedata.store
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.lamart.gyro.livedata.BehaviorLiveData
-import io.lamart.gyro.livedata.toOptionalSegment
-import io.lamart.gyro.segments.Segment
+import io.lamart.gyro.livedata.toOptionalMutable
+import io.lamart.gyro.mutable.Mutable
 import io.lamart.gyro.store.Store
-import io.lamart.gyro.variables.Variable
 
 interface LiveDataStoreType<T, A> : Store<A> {
     val data: LiveData<T>
@@ -17,16 +16,16 @@ data class LiveDataStore<T, A>(
     override val actions: A
 ): LiveDataStoreType<T, A>
 
-fun <T, A> BehaviorLiveData<T>.toLiveDataStore(actionsFactory: (segment: Segment<T>) -> A) =
-    toSegment()
+fun <T, A> BehaviorLiveData<T>.toLiveDataStore(actionsFactory: (mutable: Mutable<T>) -> A) =
+    toMutable()
         .let(actionsFactory)
         .let { LiveDataStore(this, it) }
 
 fun <T, A> MutableLiveData<T>.toLiveDataStore(
-    actionsFactory: (segment: Segment<T>) -> A,
+    actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
 ) =
-    toOptionalSegment()
-        .toSegment(ifNone)
+    toOptionalMutable()
+        .toMutable(ifNone)
         .let(actionsFactory)
         .let { LiveDataStore(this, it) }
