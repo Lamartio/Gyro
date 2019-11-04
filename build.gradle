@@ -24,7 +24,7 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-version = '1.0.0'
+version = '1.1.0'
 
 subprojects {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile).all {
