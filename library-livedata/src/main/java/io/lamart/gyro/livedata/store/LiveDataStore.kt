@@ -7,25 +7,28 @@ import io.lamart.gyro.livedata.toOptionalMutable
 import io.lamart.gyro.mutable.Mutable
 import io.lamart.gyro.store.Store
 
-interface LiveDataStoreType<T, A> : Store<A> {
-    val data: LiveData<T>
+interface LiveDataStore<T, A> : Store<A> {
+    val observable: LiveData<T>
 }
 
-data class LiveDataStore<T, A>(
-    override val data: LiveData<T>,
-    override val actions: A
-): LiveDataStoreType<T, A>
+operator fun <T, A> LiveDataStore<T, A>.component1() = observable
+operator fun <T, A> LiveDataStore<T, A>.component2() = actions
 
-fun <T, A> BehaviorLiveData<T>.toStore(actionsFactory: (mutable: Mutable<T>) -> A) =
+internal class LiveDataStoreInstance<T, A>(
+    override val observable: LiveData<T>,
+    override val actions: A
+) : LiveDataStore<T, A>
+
+fun <T, A> BehaviorLiveData<T>.toStore(actionsFactory: (mutable: Mutable<T>) -> A): LiveDataStore<T, A> =
     toMutable()
         .let(actionsFactory)
-        .let { LiveDataStore(this, it) }
+        .let { LiveDataStoreInstance(this, it) }
 
 fun <T, A> MutableLiveData<T>.toStore(
     actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
-) =
+): LiveDataStore<T, A> =
     toOptionalMutable()
         .toMutable(ifNone)
         .let(actionsFactory)
-        .let { LiveDataStore(this, it) }
+        .let { LiveDataStoreInstance(this, it) }

@@ -7,29 +7,32 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.ReplaySubject
 
-interface ObservableStoreType<T, A> : Store<A> {
+interface ObservableStore<T, A> : Store<A> {
     val observable: Observable<T>
 }
 
-data class ObservableStore<T, A>(
+operator fun <T, A> ObservableStore<T, A>.component1() = observable
+operator fun <T, A> ObservableStore<T, A>.component2() = actions
+
+internal class ObservableStoreInstance<T, A>(
     override val observable: Observable<T>,
     override val actions: A
-) : ObservableStoreType<T, A>
+) : ObservableStore<T, A>
 
 fun <T, A> BehaviorSubject<T>.toStore(
     actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
-) =
+): ObservableStore<T, A> =
     toOptionalMutable()
         .toMutable(ifNone)
         .let(actionsFactory)
-        .let { ObservableStore(this, it) }
+        .let { ObservableStoreInstance(this, it) }
 
 fun <T, A> ReplaySubject<T>.toStore(
     actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
-) =
+): ObservableStore<T, A> =
     toOptionalMutable()
         .toMutable(ifNone)
         .let(actionsFactory)
-        .let { ObservableStore(this, it) }
+        .let { ObservableStoreInstance(this, it) }

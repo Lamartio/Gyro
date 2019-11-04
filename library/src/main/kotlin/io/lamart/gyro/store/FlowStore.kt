@@ -10,6 +10,9 @@ interface FlowStore<T, A> : Store<A> {
     val observable: Flow<T>
 }
 
+operator fun <T, A> FlowStore<T, A>.component1() = observable
+operator fun <T, A> FlowStore<T, A>.component2() = actions
+
 internal class FlowStoreInstance<T, A>(
     override val observable: Flow<T>,
     override val actions: A
@@ -20,3 +23,5 @@ fun <T, A> ConflatedBroadcastChannel<T>.toStore(actionsFactory: (mutable: Mutabl
         asFlow(),
         mutableOf(get = ::value, set = { offer(it) }).let(actionsFactory)
     )
+
+fun <T> ConflatedBroadcastChannel<T>.toMutable(): Mutable<T> = mutableOf(::value) { offer(it) }

@@ -5,18 +5,17 @@ import androidx.lifecycle.LiveData
 import io.lamart.gyro.State
 import io.lamart.gyro.actions.Actions
 import io.lamart.gyro.livedata.store.LiveDataStore
-import io.lamart.gyro.livedata.store.LiveDataStoreType
 
 val Fragment.actions: Actions
     get() =
         requireContext()
             .applicationContext
-            .let { it as LiveDataStoreType<State, Actions> }
+            .let { it as LiveDataStore<State, Actions> }
             .actions
 
 val Fragment.data: LiveData<State>
     get() =
         requireContext()
             .applicationContext
-            .let { it as LiveDataStoreType<State, Actions> }
-            .data
+            .let { it as LiveDataStore<State, Actions> }
+            .observable

@@ -19,9 +19,9 @@ The guide below explains the parts that make Gyro. All of the code snippets are 
 ```kotlin
 fun tldr(user: User = User.NotSignedIn()) {
     // 1. Create a observable source (could be: Rx.BehaviorSubject or LiveData)
-    val emitter = Emitter(user)
+    val channel = ConflatedBroadcastChannel(user)
     // 2. Create a store and destructure its values
-    val (observable, actions) = emitter.toStore(::UserActions)
+    val (observable, actions) = channel.toStore(::UserActions)
 
     // 3. Subscribe to the given observable 
     observable.subscribe { user -> println(user) }
@@ -114,12 +114,12 @@ fun liveDataExample(house: House) {
     data.value = House()
 }
 
-fun emitterExample(house: House) {
-    val emitter = Emitter(house)
-    val mutable: Mutable<House> = emitter.toMutable()
-    val state: House = emitter.get()
+fun channelExample(house: House) {
+    val channel = ConflatedBroadcastChannel(house)
+    val mutable: Mutable<House> = channel.toMutable()
+    val state: House = channel.get()
 
-    emitter.set(House())
+    channel.set(House())
 }
 ```
 
@@ -158,7 +158,7 @@ The graphical part of an application is only interested in the state and how it 
     val actions: Actions = store.actions
 ```
 
-Such `Store` is simply a container for holding the actions and the observable source. The above example shows how to create a `Store` for `LiveData`, but there are also options for `BehaviorSubject`, `ReplaySubject` and Gyro's own `Emitter`.
+Such `Store` is simply a container for holding the actions and the observable source. The above example shows how to create a `Store` for `LiveData`, but there are also options for `BehaviorSubject`, `ReplaySubject` and Kotlin Coroutine's `ConflatedBroadcastChannel`.
 
 # Asynchronicity
 When implementing a sign-in functionality, we let the lengthy network call happen on a background thread. During its operation we show a spinner and on success we show the screen behind the sign-in screen. 
