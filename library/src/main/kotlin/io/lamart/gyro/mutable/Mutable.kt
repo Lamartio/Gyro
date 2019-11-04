@@ -42,3 +42,5 @@ fun <T> AtomicReference<T>.toMutable() = Mutable(::get, ::set)
 
 fun <T> Mutable<T>.toImmutable() = Immutable(this)
 
+fun <T> mutableOf(get: () -> T, set: (T) -> Unit): Mutable<T> = Mutable(get, set)
+

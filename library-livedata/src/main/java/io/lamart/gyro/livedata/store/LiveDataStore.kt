@@ -16,12 +16,12 @@ data class LiveDataStore<T, A>(
     override val actions: A
 ): LiveDataStoreType<T, A>
 
-fun <T, A> BehaviorLiveData<T>.toLiveDataStore(actionsFactory: (mutable: Mutable<T>) -> A) =
+fun <T, A> BehaviorLiveData<T>.toStore(actionsFactory: (mutable: Mutable<T>) -> A) =
     toMutable()
         .let(actionsFactory)
         .let { LiveDataStore(this, it) }
 
-fun <T, A> MutableLiveData<T>.toLiveDataStore(
+fun <T, A> MutableLiveData<T>.toStore(
     actionsFactory: (mutable: Mutable<T>) -> A,
     ifNone: () -> T = { throw NullPointerException() }
 ) =

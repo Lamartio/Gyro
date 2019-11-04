@@ -16,7 +16,7 @@ android {
 dependencies {
     implementation project(':library')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    api 'android.arch.lifecycle:livedata-core:1.1.1'
+    implementation "androidx.lifecycle:lifecycle-livedata-core:2.1.0"
     testImplementation 'junit:junit:4.12'
 }
 
